@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  email                 String   @unique
+  passwordHash          String   @map("password_hash")
+  role                  String   @default("user")
+  realName              String   @map("real_name")
+  displayName           String   @map("display_name")
+  profileImage          String?  @map("profile_image")
+  weight                Decimal? @db.Decimal(5, 2)
+  height                Decimal? @db.Decimal(5, 2)
+  bmi                   Decimal? @db.Decimal(5, 2)
+  bodyFatPercentage     Decimal? @map("body_fat_percentage") @db.Decimal(5, 2)
+  muscleMassPercentage  Decimal? @map("muscle_mass_percentage") @db.Decimal(5, 2)
+  beforeImage          String?  @map("before_image")
+  afterImage           String?  @map("after_image")
+  country               String?
+  city                  String?
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  createdCompetitions   Competition[] @relation("CompetitionCreator")
+  participations        CompetitionParticipant[]
+  measurements          Measurement[]
+  testimonials          Testimonial[]
+  notifications         Notification[]
+  approvedParticipants  CompetitionParticipant[] @relation("ApprovedBy")
+
+  @@map("users")
+}
+
+model Admin {
+  id                  String   @id @default(uuid())
+  email               String   @unique
+  passwordHash        String   @map("password_hash")
+  role                String   @default("admin")
+  name                String
+  mustResetPassword   Boolean  @default(true) @map("must_reset_password")
+  createdAt           DateTime @default(now()) @map("created_at")
+  createdById         String?  @map("created_by")
+  
+  createdBy           Admin?   @relation("AdminToAdmin", fields: [createdById], references: [id])
+  createdAdmins       Admin[]  @relation("AdminToAdmin")
+  
+  approvedTestimonials Testimonial[] @relation("ApprovedByAdmin")
+  hiddenTestimonials   Testimonial[] @relation("HiddenByAdmin")
+
+  @@map("admins")
+}
+
+model Competition {
+  id                  String   @id @default(uuid())
+  name                String
+  description         String?
+  creatorId           String?  @map("creator_id")
+  isPublic            Boolean  @default(true) @map("is_public")
+  joinMode            String   @default("free") @map("join_mode")
+  maxParticipants     Int?     @map("max_participants")
+  startDate           DateTime @map("start_date")
+  duration            Int      // in days
+  measurementMethod   String   @map("measurement_method")
+  prizeDescription    String?  @map("prize_description")
+  winnerDistribution  String   @default("1st") @map("winner_distribution")
+  status              String   @default("upcoming")
+  winners             Json?    // Store winner data as JSON
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  creator             User?    @relation("CompetitionCreator", fields: [creatorId], references: [id])
+  participants        CompetitionParticipant[]
+  measurements        Measurement[]
+  testimonials        Testimonial[]
+
+  @@map("competitions")
+}
+
+model CompetitionParticipant {
+  id             String   @id @default(uuid())
+  competitionId  String   @map("competition_id")
+  userId         String   @map("user_id")
+  joinedAt       DateTime @default(now()) @map("joined_at")
+  approved       Boolean  @default(false)
+  approvedById   String?  @map("approved_by")
+  approvedAt     DateTime? @map("approved_at")
+
+  competition    Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  approvedBy     User?       @relation("ApprovedBy", fields: [approvedById], references: [id])
+
+  @@unique([competitionId, userId])
+  @@map("competition_participants")
+}
+
+model Measurement {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  competitionId     String   @map("competition_id")
+  weight            Decimal  @db.Decimal(5, 2)
+  bodyFatPercentage Decimal? @map("body_fat_percentage") @db.Decimal(5, 2)
+  bmi               Decimal? @db.Decimal(5, 2)
+  measurementDate   DateTime @map("measurement_date")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competition       Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@map("measurements")
+}
+
+model Testimonial {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  competitionId   String   @map("competition_id")
+  text            String
+  weightLost      Decimal? @map("weight_lost") @db.Decimal(5, 2)
+  status          String   @default("pending")
+  approvedAt      DateTime? @map("approved_at")
+  approvedById    String?  @map("approved_by")
+  hiddenAt        DateTime? @map("hidden_at")
+  hiddenById      String?  @map("hidden_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competition     Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  approvedBy      Admin?      @relation("ApprovedByAdmin", fields: [approvedById], references: [id])
+  hiddenBy        Admin?      @relation("HiddenByAdmin", fields: [hiddenById], references: [id])
+
+  @@map("testimonials")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

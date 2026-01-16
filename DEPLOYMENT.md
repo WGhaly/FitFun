@@ -74,29 +74,23 @@ git push -u origin main
    - `POSTGRES_PASSWORD`
    - `POSTGRES_DATABASE`
 
-### Step 4: Run Database Migrations
+### Step 4: Run Database Migrations (Prisma)
 
-**Option A: Using Vercel Postgres Dashboard**
-1. Go to your database in Vercel
-2. Click **Query** tab
-3. Copy contents of `database/schema.sql`
-4. Click **Run**
-5. Copy contents of `database/seed.sql`
-6. Click **Run**
+1. **Locally**, ensure your `.env` or `prisma.config.ts` has the correct `POSTGRES_PRISMA_URL` (you can grab this from the Vercel dashboard).
+2. Run the following command to push your schema to Vercel Postgres:
+   ```bash
+   npx prisma db push
+   ```
+3. Run the seed script to add demo data:
+   ```bash
+   node prisma/seed.js
+   ```
 
-**Option B: Using psql Locally**
+**Alternatively, using Vercel CLI**:
 ```bash
-# Get connection string from Vercel dashboard
-psql "YOUR_POSTGRES_URL_FROM_VERCEL"
-
-# Run schema
-\i database/schema.sql
-
-# Run seed data
-\i database/seed.sql
-
-# Exit
-\q
+vercel pull
+vercel build
+npx prisma db push
 ```
 
 ### Step 5: Add Environment Variables
