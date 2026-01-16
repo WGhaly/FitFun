@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competition Details - FitFun</title>
+    <meta name="description" content="View competition details, leaderboard, and submit measurements">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        .competition-header {
+            background: var(--gradient-hero);
+            color: white;
+            padding: var(--space-8) 0;
+            margin-bottom: var(--space-8);
+        }
+
+        .competition-header h1 {
+            color: white;
+            margin-bottom: var(--space-4);
+        }
+
+        .competition-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .competition-meta-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .competition-meta-label {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            margin-bottom: var(--space-1);
+        }
+
+        .competition-meta-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-5);
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-3);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .leaderboard-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .leaderboard-rank {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            flex-shrink: 0;
+        }
+
+        .leaderboard-rank.first {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .leaderboard-rank.second {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            color: white;
+        }
+
+        .leaderboard-rank.third {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+            color: white;
+        }
+
+        .leaderboard-rank.other {
+            background: var(--color-neutral-200);
+            color: var(--color-neutral-700);
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+
+        .leaderboard-stats {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .leaderboard-score {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-600);
+        }
+
+        .measurement-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .measurement-date {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-2);
+        }
+
+        .measurement-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .measurement-value {
+            text-align: center;
+        }
+
+        .measurement-value-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-1);
+        }
+
+        .measurement-value-number {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+        }
+
+        .info-box {
+            background: var(--color-primary-50);
+            border-left: 4px solid var(--color-primary-500);
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-6);
+        }
+
+        [data-theme="dark"] .info-box {
+            background: var(--color-primary-900);
+        }
+
+        .participant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .participant-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .participant-card .avatar {
+            margin: 0 auto var(--space-3);
+        }
+
+        .participant-name {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="home.html" class="navbar-brand">FitFun</a>
+
+            <button class="navbar-toggle" id="navbar-toggle">☰</button>
+
+            <ul class="navbar-menu" id="navbar-menu">
+                <li><a href="home.html" class="navbar-link">Home</a></li>
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="profile.html" class="navbar-link">Profile</a></li>
+                <li><a href="analytics.html" class="navbar-link">Analytics</a></li>
+                <li><button class="btn btn-sm btn-outline" id="logout-btn">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Competition Header -->
+    <section class="competition-header">
+        <div class="container">
+            <div class="mb-4">
+                <a href="dashboard.html"
+                    style="color: white; display: inline-flex; align-items: center; gap: var(--space-2);">
+                    ← Back to Dashboard
+                </a>
+            </div>
+
+            <div class="flex justify-between items-start flex-wrap gap-4">
+                <div>
+                    <h1 id="competition-name">Loading...</h1>
+                    <p id="competition-description" style="color: rgba(255,255,255,0.9); max-width: 600px;"></p>
+                </div>
+                <div id="competition-status-badge"></div>
+            </div>
+
+            <div class="competition-meta-grid" id="competition-meta">
+                <!-- Meta items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        <div class="container">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Column -->
+                <div class="lg:col-span-2">
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mb-6" id="action-buttons">
+                        <!-- Buttons will be loaded here -->
+                    </div>
+
+                    <!-- Leaderboard -->
+                    <section class="mb-8">
+                        <h2 class="mb-6">🏆 Leaderboard</h2>
+                        <div id="leaderboard-list">
+                            <!-- Leaderboard items will be loaded here -->
+                        </div>
+                        <div class="empty-state" id="leaderboard-empty" style="display: none;">
+                            <div class="empty-state-icon">📊</div>
+                            <h3 class="empty-state-title">No measurements yet</h3>
+                            <p class="empty-state-description">Be the first to submit your measurements!</p>
+                        </div>
+                    </section>
+
+                    <!-- My Measurements -->
+                    <section class="mb-8" id="my-measurements-section" style="display: none;">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2>📈 My Measurements</h2>
+                            <button class="btn btn-primary" id="add-measurement-btn">Add Measurement</button>
+                        </div>
+                        <div id="my-measurements-list">
+                            <!-- User's measurements will be loaded here -->
+                        </div>
+                        <div class="empty-state" id="my-measurements-empty" style="display: none;">
+                            <div class="empty-state-icon">📏</div>
+                            <h3 class="empty-state-title">No measurements submitted</h3>
+                            <p class="empty-state-description">Submit your first measurement to track your progress</p>
+                            <button class="btn btn-primary"
+                                onclick="document.getElementById('add-measurement-btn').click()">
+                                Add Measurement
+                            </button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Sidebar -->
+                <div>
+                    <!-- Competition Info -->
+                    <div class="card mb-6">
+                        <h3 class="mb-4">Competition Info</h3>
+                        <div id="competition-info">
+                            <!-- Info will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Participants -->
+                    <div class="card mb-6">
+                        <h3 class="mb-4">Participants (<span id="participant-count">0</span>)</h3>
+                        <div class="participant-grid" id="participants-list">
+                            <!-- Participants will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Creator Actions -->
+                    <div class="card" id="creator-actions" style="display: none;">
+                        <h3 class="mb-4">Creator Actions</h3>
+                        <button class="btn btn-danger btn-block" id="cancel-competition-btn">
+                            Cancel Competition
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/competition.js"></script>
+    <script src="../../js/measurements.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+        const competitionId = new URLSearchParams(window.location.search).get('id');
+
+        if (!competitionId) {
+            window.location.href = 'dashboard.html';
+        }
+
+        const competition = Competition.getById(competitionId);
+        if (!competition) {
+            UI.alert('Error', 'Competition not found', 'danger').then(() => {
+                window.location.href = 'dashboard.html';
+            });
+        }
+
+        // Mobile menu toggle
+        document.getElementById('navbar-toggle').addEventListener('click', () => {
+            document.getElementById('navbar-menu').classList.toggle('active');
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '../auth/login.html';
+        });
+
+        // Load competition details
+        function loadCompetitionDetails() {
+            const comp = Competition.getById(competitionId);
+
+            document.getElementById('competition-name').textContent = comp.name;
+            document.getElementById('competition-description').textContent = comp.description || 'No description provided';
+
+            const statusBadge = UI.getStatusBadge(comp.status);
+            document.getElementById('competition-status-badge').innerHTML = '';
+            document.getElementById('competition-status-badge').appendChild(statusBadge);
+
+            // Meta information
+            const endDate = Utils.getEndDate(comp.startDate, comp.duration);
+            const frequency = Utils.calculateMeasurementFrequency(comp.duration);
+
+            const methodLabels = {
+                'absolute': 'Absolute Weight Loss (KG)',
+                'percentage': 'Percentage Weight Loss',
+                'bmi': 'BMI-based',
+                'bodyfat': 'Body Fat % Loss'
+            };
+
+            const metaGrid = document.getElementById('competition-meta');
+            metaGrid.innerHTML = `
+        <div class="competition-meta-item">
+          <div class="competition-meta-label">Start Date</div>
+          <div class="competition-meta-value">${Utils.formatDate(comp.startDate, 'short')}</div>
+        </div>
+        <div class="competition-meta-item">
+          <div class="competition-meta-label">End Date</div>
+          <div class="competition-meta-value">${Utils.formatDate(endDate, 'short')}</div>
+        </div>
+        <div class="competition-meta-item">
+          <div class="competition-meta-label">Duration</div>
+          <div class="competition-meta-value">${comp.duration} days</div>
+        </div>
+        <div class="competition-meta-item">
+          <div class="competition-meta-label">Participants</div>
+          <div class="competition-meta-value">${comp.participants.length}${comp.maxParticipants ? `/${comp.maxParticipants}` : ''}</div>
+        </div>
+        <div class="competition-meta-item">
+          <div class="competition-meta-label">Measurement</div>
+          <div class="competition-meta-value">Every ${frequency} days</div>
+        </div>
+      `;
+
+            // Competition info sidebar
+            const infoDiv = document.getElementById('competition-info');
+            infoDiv.innerHTML = `
+        <div style="margin-bottom: var(--space-4);">
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-1);">
+            Method
+          </div>
+          <div style="font-weight: var(--font-weight-semibold);">
+            ${methodLabels[comp.measurementMethod]}
+          </div>
+        </div>
+        <div style="margin-bottom: var(--space-4);">
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-1);">
+            Winner Distribution
+          </div>
+          <div style="font-weight: var(--font-weight-semibold);">
+            ${comp.winnerDistribution.replace('+', ' + ')}
+          </div>
+        </div>
+        ${comp.prizeDescription ? `
+          <div style="margin-bottom: var(--space-4);">
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-1);">
+              Prize
+            </div>
+            <div style="font-weight: var(--font-weight-semibold);">
+              ${Utils.escapeHtml(comp.prizeDescription)}
+            </div>
+          </div>
+        ` : ''}
+        <div style="margin-bottom: var(--space-4);">
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-1);">
+            Visibility
+          </div>
+          <div style="font-weight: var(--font-weight-semibold);">
+            ${comp.isPublic ? 'Public' : 'Private'}
+          </div>
+        </div>
+        <div>
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-1);">
+            Join Mode
+          </div>
+          <div style="font-weight: var(--font-weight-semibold);">
+            ${comp.joinMode === 'free' ? 'Free Join' : 'Approval Required'}
+          </div>
+        </div>
+      `;
+        }
+
+        // Load action buttons
+        function loadActionButtons() {
+            const comp = Competition.getById(competitionId);
+            const isParticipant = comp.participants.includes(currentUser.id);
+            const isCreator = comp.creatorId === currentUser.id;
+            const buttonsDiv = document.getElementById('action-buttons');
+
+            buttonsDiv.innerHTML = '';
+
+            if (isParticipant && (comp.status === 'active' || comp.status === 'grace_period')) {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-primary';
+                btn.textContent = '📊 Submit Measurement';
+                btn.onclick = showAddMeasurementModal;
+                buttonsDiv.appendChild(btn);
+            }
+
+            if (isCreator && comp.status !== 'completed' && comp.status !== 'canceled') {
+                document.getElementById('creator-actions').style.display = 'block';
+            }
+        }
+
+        // Load leaderboard
+        function loadLeaderboard() {
+            const leaderboard = Competition.getLeaderboard(competitionId);
+            const list = document.getElementById('leaderboard-list');
+            const empty = document.getElementById('leaderboard-empty');
+
+            if (leaderboard.length === 0 || !leaderboard.some(l => l.hasMeasurements)) {
+                list.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            list.style.display = 'block';
+            empty.style.display = 'none';
+            list.innerHTML = '';
+
+            leaderboard.forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item animate-fade-in';
+
+                const rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : 'other';
+                const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : entry.rank;
+
+                item.innerHTML = `
+          <div class="leaderboard-rank ${rankClass}">${rankIcon}</div>
+          ${UI.createAvatar({ displayName: entry.displayName, profileImage: entry.profileImage }, 'lg').outerHTML}
+          <div class="leaderboard-info">
+            <div class="leaderboard-name">${Utils.escapeHtml(entry.displayName)}</div>
+            <div class="leaderboard-stats">
+              ${entry.hasMeasurements ? `${entry.measurementCount} measurements` : 'No measurements yet'}
+            </div>
+          </div>
+          <div class="leaderboard-score">
+            ${entry.hasMeasurements ? entry.score.toFixed(2) : '-'}
+          </div>
+        `;
+
+                list.appendChild(item);
+            });
+        }
+
+        // Load user's measurements
+        function loadMyMeasurements() {
+            const comp = Competition.getById(competitionId);
+            const isParticipant = comp.participants.includes(currentUser.id);
+
+            if (!isParticipant) {
+                document.getElementById('my-measurements-section').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('my-measurements-section').style.display = 'block';
+
+            const measurements = Measurements.getUserMeasurements(currentUser.id, competitionId);
+            const list = document.getElementById('my-measurements-list');
+            const empty = document.getElementById('my-measurements-empty');
+
+            if (measurements.length === 0) {
+                list.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            list.style.display = 'block';
+            empty.style.display = 'none';
+            list.innerHTML = '';
+
+            measurements.forEach((m, index) => {
+                const card = document.createElement('div');
+                card.className = 'measurement-card animate-fade-in';
+
+                const canEdit = Utils.canEditMeasurement(Utils.getEndDate(comp.startDate, comp.duration));
+
+                card.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <div class="measurement-date">
+              ${Utils.formatDate(m.timestamp, 'long')}
+              ${m.editedAt ? '<span style="color: var(--color-warning-600);"> (edited)</span>' : ''}
+            </div>
+            ${canEdit ? `
+              <div class="flex gap-2">
+                <button class="btn btn-sm btn-ghost" onclick="editMeasurement('${m.id}')">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteMeasurement('${m.id}')">Delete</button>
+              </div>
+            ` : ''}
+          </div>
+          <div class="measurement-values">
+            <div class="measurement-value">
+              <div class="measurement-value-label">Weight</div>
+              <div class="measurement-value-number">${m.weight} kg</div>
+            </div>
+            ${m.bmi ? `
+              <div class="measurement-value">
+                <div class="measurement-value-label">BMI</div>
+                <div class="measurement-value-number">${m.bmi}</div>
+              </div>
+            ` : ''}
+            ${m.bodyFatPercentage ? `
+              <div class="measurement-value">
+                <div class="measurement-value-label">Body Fat %</div>
+                <div class="measurement-value-number">${m.bodyFatPercentage}%</div>
+              </div>
+            ` : ''}
+            ${m.muscleMassPercentage ? `
+              <div class="measurement-value">
+                <div class="measurement-value-label">Muscle Mass %</div>
+                <div class="measurement-value-number">${m.muscleMassPercentage}%</div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+                list.appendChild(card);
+            });
+        }
+
+        // Load participants
+        function loadParticipants() {
+            const comp = Competition.getById(competitionId);
+            const users = stateManager.getState('users');
+            const list = document.getElementById('participants-list');
+
+            document.getElementById('participant-count').textContent = comp.participants.length;
+            list.innerHTML = '';
+
+            comp.participants.forEach(userId => {
+                const user = users.find(u => u.id === userId);
+                if (!user) return;
+
+                const card = document.createElement('div');
+                card.className = 'participant-card';
+
+                card.innerHTML = `
+          ${UI.createAvatar(user, 'lg').outerHTML}
+          <div class="participant-name">${Utils.escapeHtml(user.displayName)}</div>
+          ${userId === comp.creatorId ? '<span class="badge badge-secondary" style="margin-top: var(--space-2);">Creator</span>' : ''}
+        `;
+
+                list.appendChild(card);
+            });
+        }
+
+        // Show add measurement modal
+        function showAddMeasurementModal() {
+            const form = document.createElement('form');
+            form.innerHTML = `
+        <div class="form-group">
+          <label for="weight" class="form-label form-label-required">Weight (KG)</label>
+          <input type="number" id="modal-weight" class="form-input" step="0.1" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="bmi" class="form-label">BMI</label>
+          <input type="number" id="modal-bmi" class="form-input" step="0.1" min="0">
+        </div>
+        <div class="form-group">
+          <label for="bodyFat" class="form-label">Body Fat %</label>
+          <input type="number" id="modal-bodyFat" class="form-input" step="0.1" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label for="muscleMass" class="form-label">Muscle Mass %</label>
+          <input type="number" id="modal-muscleMass" class="form-input" step="0.1" min="0" max="100">
+        </div>
+      `;
+
+            UI.showModal({
+                title: 'Submit Measurement',
+                content: form,
+                confirmText: 'Submit',
+                onConfirm: () => {
+                    const result = Measurements.submit({
+                        competitionId,
+                        userId: currentUser.id,
+                        weight: parseFloat(document.getElementById('modal-weight').value),
+                        bmi: parseFloat(document.getElementById('modal-bmi').value) || null,
+                        bodyFatPercentage: parseFloat(document.getElementById('modal-bodyFat').value) || null,
+                        muscleMassPercentage: parseFloat(document.getElementById('modal-muscleMass').value) || null
+                    });
+
+                    if (result.success) {
+                        UI.showNotification({
+                            title: 'Success',
+                            message: 'Measurement submitted successfully',
+                            type: 'success'
+                        });
+                        loadMyMeasurements();
+                        loadLeaderboard();
+                    } else {
+                        UI.alert('Error', result.error, 'danger');
+                    }
+                }
+            });
+        }
+
+        // Edit measurement
+        window.editMeasurement = function (measurementId) {
+            const measurements = stateManager.getState('measurements');
+            const measurement = measurements.find(m => m.id === measurementId);
+
+            const form = document.createElement('form');
+            form.innerHTML = `
+        <div class="form-group">
+          <label for="weight" class="form-label form-label-required">Weight (KG)</label>
+          <input type="number" id="modal-weight" class="form-input" step="0.1" min="0" value="${measurement.weight}" required>
+        </div>
+        <div class="form-group">
+          <label for="bmi" class="form-label">BMI</label>
+          <input type="number" id="modal-bmi" class="form-input" step="0.1" min="0" value="${measurement.bmi || ''}">
+        </div>
+        <div class="form-group">
+          <label for="bodyFat" class="form-label">Body Fat %</label>
+          <input type="number" id="modal-bodyFat" class="form-input" step="0.1" min="0" max="100" value="${measurement.bodyFatPercentage || ''}">
+        </div>
+        <div class="form-group">
+          <label for="muscleMass" class="form-label">Muscle Mass %</label>
+          <input type="number" id="modal-muscleMass" class="form-input" step="0.1" min="0" max="100" value="${measurement.muscleMassPercentage || ''}">
+        </div>
+      `;
+
+            UI.showModal({
+                title: 'Edit Measurement',
+                content: form,
+                confirmText: 'Update',
+                onConfirm: () => {
+                    const result = Measurements.edit(measurementId, {
+                        weight: parseFloat(document.getElementById('modal-weight').value),
+                        bmi: parseFloat(document.getElementById('modal-bmi').value) || null,
+                        bodyFatPercentage: parseFloat(document.getElementById('modal-bodyFat').value) || null,
+                        muscleMassPercentage: parseFloat(document.getElementById('modal-muscleMass').value) || null
+                    });
+
+                    if (result.success) {
+                        UI.showNotification({
+                            title: 'Success',
+                            message: 'Measurement updated successfully',
+                            type: 'success'
+                        });
+                        loadMyMeasurements();
+                        loadLeaderboard();
+                    } else {
+                        UI.alert('Error', result.error, 'danger');
+                    }
+                }
+            });
+        };
+
+        // Delete measurement
+        window.deleteMeasurement = async function (measurementId) {
+            const confirmed = await UI.confirm({
+                title: 'Delete Measurement',
+                content: 'Are you sure you want to delete this measurement? This action cannot be undone.',
+                confirmText: 'Delete',
+                type: 'danger'
+            });
+
+            if (confirmed) {
+                const result = Measurements.delete(measurementId, currentUser.id);
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Deleted',
+                        message: 'Measurement deleted successfully',
+                        type: 'success'
+                    });
+                    loadMyMeasurements();
+                    loadLeaderboard();
+                } else {
+                    UI.alert('Error', result.error, 'danger');
+                }
+            }
+        };
+
+        // Cancel competition
+        document.getElementById('cancel-competition-btn').addEventListener('click', async () => {
+            const confirmed = await UI.confirm({
+                title: 'Cancel Competition',
+                content: 'Are you sure you want to cancel this competition? All participants will be notified.',
+                confirmText: 'Cancel Competition',
+                type: 'danger'
+            });
+
+            if (confirmed) {
+                const result = Competition.cancel(competitionId, currentUser.id);
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Canceled',
+                        message: 'Competition canceled successfully',
+                        type: 'info'
+                    });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    UI.alert('Error', result.error, 'danger');
+                }
+            }
+        });
+
+        // Add measurement button
+        document.getElementById('add-measurement-btn').addEventListener('click', showAddMeasurementModal);
+
+        // Update periodically
+        Competition.updateStatuses();
+        setInterval(() => {
+            Competition.updateStatuses();
+            loadCompetitionDetails();
+            loadLeaderboard();
+        }, 60000);
+
+        // Initial load
+        loadCompetitionDetails();
+        loadActionButtons();
+        loadLeaderboard();
+        loadMyMeasurements();
+        loadParticipants();
+    </script>
+</body>
+
+</html>

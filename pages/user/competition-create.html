@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Competition - FitFun</title>
+    <meta name="description" content="Create a new weight loss competition on FitFun">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="home.html" class="navbar-brand">FitFun</a>
+
+            <button class="navbar-toggle" id="navbar-toggle">☰</button>
+
+            <ul class="navbar-menu" id="navbar-menu">
+                <li><a href="home.html" class="navbar-link">Home</a></li>
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="profile.html" class="navbar-link">Profile</a></li>
+                <li><a href="analytics.html" class="navbar-link">Analytics</a></li>
+                <li><button class="btn btn-sm btn-outline" id="logout-btn">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        <div class="container" style="max-width: 800px;">
+            <div class="mb-6">
+                <a href="home.html" class="text-primary"
+                    style="display: inline-flex; align-items: center; gap: var(--space-2);">
+                    ← Back to Home
+                </a>
+            </div>
+
+            <div class="card">
+                <h1 class="mb-2">Create New Competition</h1>
+                <p class="text-secondary mb-8">Set up your weight loss competition and invite participants to join</p>
+
+                <form id="competition-form">
+                    <!-- Basic Information -->
+                    <div class="mb-8">
+                        <h3 class="mb-4">Basic Information</h3>
+
+                        <div class="form-group">
+                            <label for="name" class="form-label form-label-required">Competition Name</label>
+                            <input type="text" id="name" name="name" class="form-input"
+                                placeholder="e.g., Summer Weight Loss Challenge" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" name="description" class="form-textarea"
+                                placeholder="Describe your competition, goals, and what makes it special..."
+                                rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Competition Settings -->
+                    <div class="mb-8">
+                        <h3 class="mb-4">Competition Settings</h3>
+
+                        <div class="form-group">
+                            <label class="form-label form-label-required">Visibility</label>
+                            <div class="flex gap-4">
+                                <div class="form-check">
+                                    <input type="radio" id="public" name="visibility" value="public"
+                                        class="form-check-input" checked>
+                                    <label for="public" class="form-check-label">Public - Anyone can see and
+                                        join</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="private" name="visibility" value="private"
+                                        class="form-check-input">
+                                    <label for="private" class="form-check-label">Private - Invite only</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label form-label-required">Join Mode</label>
+                            <div class="flex gap-4">
+                                <div class="form-check">
+                                    <input type="radio" id="free-join" name="joinMode" value="free"
+                                        class="form-check-input" checked>
+                                    <label for="free-join" class="form-check-label">Free Join - Automatic</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="approval" name="joinMode" value="approval"
+                                        class="form-check-input">
+                                    <label for="approval" class="form-check-label">Approval Required</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="max-participants-group">
+                            <label for="maxParticipants" class="form-label form-label-required">Maximum
+                                Participants</label>
+                            <input type="number" id="maxParticipants" name="maxParticipants" class="form-input"
+                                placeholder="e.g., 50" min="2" required>
+                            <span class="form-help">Required for public competitions</span>
+                        </div>
+                    </div>
+
+                    <!-- Schedule -->
+                    <div class="mb-8">
+                        <h3 class="mb-4">Schedule</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="startDate" class="form-label form-label-required">Start Date</label>
+                                <input type="date" id="startDate" name="startDate" class="form-input" required>
+                                <span class="form-help">Must be in the future</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="duration" class="form-label form-label-required">Duration (days)</label>
+                                <input type="number" id="duration" name="duration" class="form-input"
+                                    placeholder="e.g., 84" min="7" max="365" required>
+                                <span class="form-help" id="measurement-frequency-help"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Measurement Method -->
+                    <div class="mb-8">
+                        <h3 class="mb-4">Measurement Method</h3>
+
+                        <div class="form-group">
+                            <label for="measurementMethod" class="form-label form-label-required">How to determine the
+                                winner?</label>
+                            <select id="measurementMethod" name="measurementMethod" class="form-select" required>
+                                <option value="percentage">Percentage Weight Loss (%)</option>
+                                <option value="absolute">Absolute Weight Loss (KG)</option>
+                                <option value="bmi">BMI-based</option>
+                                <option value="bodyfat">Body Fat Percentage Loss</option>
+                            </select>
+                            <span class="form-help" id="method-help">
+                                Percentage is recommended for fair competition across different body types
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Prizes & Winners -->
+                    <div class="mb-8">
+                        <h3 class="mb-4">Prizes & Winners</h3>
+
+                        <div class="form-group">
+                            <label for="prizeDescription" class="form-label">Prize Description</label>
+                            <textarea id="prizeDescription" name="prizeDescription" class="form-textarea"
+                                placeholder="Describe the prize(s) for winners (optional)" rows="3"></textarea>
+                            <span class="form-help">No payments are handled by the system</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="winnerDistribution" class="form-label form-label-required">Winner
+                                Distribution</label>
+                            <select id="winnerDistribution" name="winnerDistribution" class="form-select" required>
+                                <option value="1st">1st Place Only</option>
+                                <option value="1st+2nd">1st and 2nd Place</option>
+                                <option value="1st+2nd+3rd">1st, 2nd, and 3rd Place</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div class="alert alert-info mb-6">
+                        <h4 style="margin-bottom: var(--space-2);">📋 Competition Summary</h4>
+                        <ul style="margin: 0; padding-left: var(--space-6); list-style: disc;">
+                            <li>You will automatically join as a participant</li>
+                            <li>Rules cannot be edited after the competition starts</li>
+                            <li>Measurements will be required <span id="summary-frequency">weekly</span></li>
+                            <li>24-hour grace period after end date for final measurements</li>
+                            <li>Winners will be calculated automatically</li>
+                        </ul>
+                    </div>
+
+                    <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary btn-lg" id="create-btn">
+                            Create Competition
+                        </button>
+                        <a href="home.html" class="btn btn-ghost btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/competition.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Mobile menu toggle
+        document.getElementById('navbar-toggle').addEventListener('click', () => {
+            document.getElementById('navbar-menu').classList.toggle('active');
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '../auth/login.html';
+        });
+
+        // Set minimum start date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('startDate').min = tomorrow.toISOString().split('T')[0];
+
+        // Update measurement frequency help text
+        document.getElementById('duration').addEventListener('input', (e) => {
+            const duration = parseInt(e.target.value);
+            if (duration) {
+                const frequency = Utils.calculateMeasurementFrequency(duration);
+                const help = document.getElementById('measurement-frequency-help');
+                const summary = document.getElementById('summary-frequency');
+
+                if (duration < 30) {
+                    help.textContent = `Measurements every ${frequency} days (${Math.ceil(duration / frequency)} checkpoints)`;
+                    summary.textContent = `every ${frequency} days`;
+                } else {
+                    help.textContent = 'Measurements weekly (every 7 days)';
+                    summary.textContent = 'weekly';
+                }
+            }
+        });
+
+        // Update method help text
+        document.getElementById('measurementMethod').addEventListener('change', (e) => {
+            const help = document.getElementById('method-help');
+            const method = e.target.value;
+
+            const helpTexts = {
+                'percentage': 'Percentage is recommended for fair competition across different body types',
+                'absolute': 'Absolute weight loss in kilograms - may favor heavier participants',
+                'bmi': 'Based on BMI reduction - participants must have BMI data in their profile',
+                'bodyfat': 'Based on body fat percentage loss - participants must track body fat %'
+            };
+
+            help.textContent = helpTexts[method];
+        });
+
+        // Toggle max participants requirement
+        document.querySelectorAll('input[name="visibility"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const maxParticipantsInput = document.getElementById('maxParticipants');
+                const group = document.getElementById('max-participants-group');
+
+                if (e.target.value === 'public') {
+                    maxParticipantsInput.required = true;
+                    group.style.display = 'block';
+                } else {
+                    maxParticipantsInput.required = false;
+                    group.style.display = 'none';
+                }
+            });
+        });
+
+        // Handle form submission
+        document.getElementById('competition-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                isPublic: document.querySelector('input[name="visibility"]:checked').value === 'public',
+                joinMode: document.querySelector('input[name="joinMode"]:checked').value,
+                maxParticipants: parseInt(document.getElementById('maxParticipants').value) || null,
+                startDate: new Date(document.getElementById('startDate').value).toISOString(),
+                duration: parseInt(document.getElementById('duration').value),
+                measurementMethod: document.getElementById('measurementMethod').value,
+                prizeDescription: document.getElementById('prizeDescription').value,
+                winnerDistribution: document.getElementById('winnerDistribution').value
+            };
+
+            const errorDiv = document.getElementById('error-message');
+            const createBtn = document.getElementById('create-btn');
+
+            // Hide previous errors
+            errorDiv.style.display = 'none';
+
+            // Disable button
+            createBtn.disabled = true;
+            createBtn.innerHTML = '<span class="spinner spinner-sm"></span> Creating...';
+
+            // Simulate async operation
+            setTimeout(() => {
+                const result = Competition.create(formData, currentUser.id);
+
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Success',
+                        message: 'Competition created successfully!',
+                        type: 'success',
+                        duration: 2000
+                    });
+
+                    // Redirect to competition detail
+                    setTimeout(() => {
+                        window.location.href = `competition-detail.html?id=${result.competition.id}`;
+                    }, 1000);
+                } else {
+                    errorDiv.textContent = result.error;
+                    errorDiv.style.display = 'block';
+                    createBtn.disabled = false;
+                    createBtn.textContent = 'Create Competition';
+
+                    // Scroll to error
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 500);
+        });
+
+        // Trigger initial frequency calculation
+        document.getElementById('duration').dispatchEvent(new Event('input'));
+    </script>
+</body>
+
+</html>

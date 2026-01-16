@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonial Management - FitFun Admin</title>
+    <meta name="description" content="Manage user testimonials">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        body {
+            background: var(--color-background);
+            min-height: 100vh;
+        }
+
+        /* Admin Navigation */
+        .admin-nav {
+            background: white;
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-4) 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-logo {
+            font-family: var(--font-heading);
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .admin-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .admin-nav-link {
+            padding: var(--space-2) var(--space-4);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            transition: all 0.2s;
+        }
+
+        .admin-nav-link:hover {
+            background: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        .admin-nav-link.active {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .admin-user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .admin-user-name {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-text);
+        }
+
+        .btn-logout {
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: var(--color-error-dark);
+        }
+
+        /* Page Content */
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .page-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--text-lg);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-2);
+            margin-bottom: var(--space-6);
+            background: white;
+            padding: var(--space-2);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: var(--space-3) var(--space-4);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+        }
+
+        .filter-tab:hover {
+            background: var(--color-background);
+        }
+
+        .filter-tab.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .filter-tab .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+        }
+
+        .filter-tab.active .count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Testimonials Grid */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .testimonial-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .testimonial-user {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: var(--text-lg);
+        }
+
+        .testimonial-user-info {
+            flex: 1;
+        }
+
+        .testimonial-user-name {
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-1);
+        }
+
+        .testimonial-competition {
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .testimonial-status {
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .testimonial-status.pending {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+
+        .testimonial-status.approved {
+            background: var(--color-success-light);
+            color: var(--color-success);
+        }
+
+        .testimonial-status.hidden {
+            background: var(--color-error-light);
+            color: var(--color-error);
+        }
+
+        .testimonial-content {
+            padding: var(--space-6);
+        }
+
+        .testimonial-text {
+            color: var(--color-text);
+            line-height: 1.6;
+            margin-bottom: var(--space-4);
+        }
+
+        .testimonial-meta {
+            display: flex;
+            gap: var(--space-4);
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        .testimonial-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .testimonial-actions {
+            padding: var(--space-4) var(--space-6);
+            background: var(--color-background);
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: var(--space-3) var(--space-4);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-hide {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .btn-hide:hover {
+            background: var(--color-error-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-unhide {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-unhide:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-delete {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: var(--color-error-dark);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: var(--space-4);
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .empty-state p {
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                display: none;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <div class="admin-nav-container">
+            <div class="admin-logo">
+                FitFun <span class="admin-badge">ADMIN</span>
+            </div>
+
+            <div class="admin-nav-links">
+                <a href="dashboard.html" class="admin-nav-link">Dashboard</a>
+                <a href="users.html" class="admin-nav-link">Users</a>
+                <a href="competitions.html" class="admin-nav-link">Competitions</a>
+                <a href="testimonials.html" class="admin-nav-link active">Testimonials</a>
+                <a href="admins.html" class="admin-nav-link" id="admins-link" style="display: none;">Admins</a>
+                <a href="insights.html" class="admin-nav-link">Insights</a>
+            </div>
+
+            <div class="admin-user-menu">
+                <span class="admin-user-name" id="admin-name">Admin</span>
+                <button class="btn-logout" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>Testimonial Management</h1>
+            <p>Review and manage user testimonials</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                All <span class="count" id="count-all">0</span>
+            </button>
+            <button class="filter-tab" data-filter="pending">
+                Pending <span class="count" id="count-pending">0</span>
+            </button>
+            <button class="filter-tab" data-filter="approved">
+                Approved <span class="count" id="count-approved">0</span>
+            </button>
+            <button class="filter-tab" data-filter="hidden">
+                Hidden <span class="count" id="count-hidden">0</span>
+            </button>
+        </div>
+
+        <!-- Testimonials Grid -->
+        <div class="testimonials-grid" id="testimonials-grid">
+            <!-- Testimonials will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated() || !Auth.isAdmin()) {
+            window.location.href = '../auth/admin-login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Show admin name
+        document.getElementById('admin-name').textContent = currentUser.displayName || currentUser.email;
+
+        // Show super admin options
+        if (currentUser.role === 'superadmin') {
+            document.getElementById('admins-link').style.display = 'block';
+        }
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                Auth.logout();
+                window.location.href = '../auth/admin-login.html';
+            }
+        });
+
+        // State
+        let currentFilter = 'all';
+
+        // Load testimonials
+        function loadTestimonials() {
+            const state = State.getState();
+            let testimonials = state.testimonials || [];
+            const users = state.users || [];
+            const competitions = state.competitions || [];
+
+            // Update counts
+            document.getElementById('count-all').textContent = testimonials.length;
+            document.getElementById('count-pending').textContent = testimonials.filter(t => t.status === 'pending').length;
+            document.getElementById('count-approved').textContent = testimonials.filter(t => t.status === 'approved').length;
+            document.getElementById('count-hidden').textContent = testimonials.filter(t => t.status === 'hidden').length;
+
+            // Filter testimonials
+            if (currentFilter !== 'all') {
+                testimonials = testimonials.filter(t => t.status === currentFilter);
+            }
+
+            // Sort by date (newest first)
+            testimonials.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            const grid = document.getElementById('testimonials-grid');
+
+            if (testimonials.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💬</div>
+                        <h3>No Testimonials</h3>
+                        <p>No testimonials found for this filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = testimonials.map(testimonial => {
+                const user = users.find(u => u.id === testimonial.userId);
+                const competition = competitions.find(c => c.id === testimonial.competitionId);
+
+                const userInitial = user?.displayName?.charAt(0).toUpperCase() || '?';
+                const userName = user?.displayName || 'Unknown User';
+                const competitionName = competition?.name || 'Unknown Competition';
+
+                return `
+                    <div class="testimonial-card">
+                        <div class="testimonial-header">
+                            <div class="testimonial-user">
+                                <div class="testimonial-avatar">${userInitial}</div>
+                                <div class="testimonial-user-info">
+                                    <div class="testimonial-user-name">${userName}</div>
+                                    <div class="testimonial-competition">🏆 ${competitionName}</div>
+                                </div>
+                                <span class="testimonial-status ${testimonial.status}">${testimonial.status.toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-content">
+                            <div class="testimonial-text">${testimonial.text}</div>
+                            <div class="testimonial-meta">
+                                <div class="testimonial-meta-item">
+                                    📅 ${Utils.formatDate(testimonial.createdAt)}
+                                </div>
+                                ${testimonial.weightLost ? `
+                                    <div class="testimonial-meta-item">
+                                        ⚖️ Lost ${testimonial.weightLost} kg
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="testimonial-actions">
+                            ${testimonial.status === 'pending' ? `
+                                <button class="btn-action btn-approve" onclick="approveTestimonial('${testimonial.id}')">
+                                    ✓ Approve
+                                </button>
+                                <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
+                                    ✕ Hide
+                                </button>
+                            ` : testimonial.status === 'approved' ? `
+                                <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
+                                    ✕ Hide
+                                </button>
+                            ` : `
+                                <button class="btn-action btn-unhide" onclick="approveTestimonial('${testimonial.id}')">
+                                    ↻ Unhide
+                                </button>
+                            `}
+                            <button class="btn-action btn-delete" onclick="deleteTestimonial('${testimonial.id}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Approve testimonial
+        function approveTestimonial(testimonialId) {
+            const state = State.getState();
+            const testimonials = state.testimonials || [];
+            const testimonial = testimonials.find(t => t.id === testimonialId);
+
+            if (testimonial) {
+                testimonial.status = 'approved';
+                testimonial.approvedAt = new Date().toISOString();
+                testimonial.approvedBy = currentUser.id;
+                State.setState('testimonials', testimonials);
+                loadTestimonials();
+            }
+        }
+
+        // Hide testimonial
+        function hideTestimonial(testimonialId) {
+            if (!confirm('Are you sure you want to hide this testimonial?')) {
+                return;
+            }
+
+            const state = State.getState();
+            const testimonials = state.testimonials || [];
+            const testimonial = testimonials.find(t => t.id === testimonialId);
+
+            if (testimonial) {
+                testimonial.status = 'hidden';
+                testimonial.hiddenAt = new Date().toISOString();
+                testimonial.hiddenBy = currentUser.id;
+                State.setState('testimonials', testimonials);
+                loadTestimonials();
+            }
+        }
+
+        // Delete testimonial
+        function deleteTestimonial(testimonialId) {
+            if (!confirm('Are you sure you want to permanently delete this testimonial? This action cannot be undone.')) {
+                return;
+            }
+
+            const state = State.getState();
+            const testimonials = state.testimonials || [];
+            const updatedTestimonials = testimonials.filter(t => t.id !== testimonialId);
+            State.setState('testimonials', updatedTestimonials);
+            loadTestimonials();
+        }
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                loadTestimonials();
+            });
+        });
+
+        // Load testimonials on page load
+        loadTestimonials();
+
+        // Refresh every 30 seconds
+        setInterval(loadTestimonials, 30000);
+    </script>
+</body>
+
+</html>

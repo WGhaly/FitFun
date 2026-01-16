@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FitFun</title>
+    <meta name="description" content="Your FitFun dashboard - Track your competitions and progress">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-3);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .competition-list-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .competition-list-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .competition-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+
+        .competition-list-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+
+        .competition-list-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .quick-action-card {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .quick-action-card:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .quick-action-icon {
+            font-size: var(--font-size-5xl);
+            margin-bottom: var(--space-3);
+        }
+
+        .quick-action-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-2);
+            color: white;
+        }
+
+        .quick-action-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-2);
+            border-bottom: 2px solid var(--color-border);
+            margin-bottom: var(--space-6);
+        }
+
+        .tab {
+            padding: var(--space-3) var(--space-6);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tab:hover {
+            color: var(--color-text-primary);
+        }
+
+        .tab.active {
+            color: var(--color-primary-600);
+            border-bottom-color: var(--color-primary-600);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="home.html" class="navbar-brand">FitFun</a>
+
+            <button class="navbar-toggle" id="navbar-toggle">☰</button>
+
+            <ul class="navbar-menu" id="navbar-menu">
+                <li><a href="home.html" class="navbar-link">Home</a></li>
+                <li><a href="dashboard.html" class="navbar-link active">Dashboard</a></li>
+                <li><a href="profile.html" class="navbar-link">Profile</a></li>
+                <li><a href="analytics.html" class="navbar-link">Analytics</a></li>
+                <li><button class="btn btn-sm btn-outline" id="logout-btn">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        <div class="container">
+            <div class="mb-8">
+                <h1 class="mb-2">My Dashboard</h1>
+                <p class="text-secondary">Track your competitions and progress</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--color-primary-100);">🏆</div>
+                    <div class="stat-value" id="stat-active-competitions">0</div>
+                    <div class="stat-label">Active Competitions</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--color-success-100);">✅</div>
+                    <div class="stat-value" id="stat-completed-competitions">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--color-secondary-100);">🥇</div>
+                    <div class="stat-value" id="stat-wins">0</div>
+                    <div class="stat-label">Wins</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--color-warning-100);">📊</div>
+                    <div class="stat-value" id="stat-total-loss">0 kg</div>
+                    <div class="stat-label">Total Weight Loss</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <section class="mb-12">
+                <h2 class="mb-6">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="competition-create.html" class="quick-action-card" style="text-decoration: none;">
+                        <div class="quick-action-icon">➕</div>
+                        <div class="quick-action-title">Create Competition</div>
+                        <div class="quick-action-description">Start a new weight loss challenge</div>
+                    </a>
+
+                    <a href="home.html" class="quick-action-card"
+                        style="background: var(--gradient-secondary); text-decoration: none;">
+                        <div class="quick-action-icon">🔍</div>
+                        <div class="quick-action-title">Browse Competitions</div>
+                        <div class="quick-action-description">Find and join active challenges</div>
+                    </a>
+
+                    <a href="profile.html" class="quick-action-card"
+                        style="background: var(--gradient-success); text-decoration: none;">
+                        <div class="quick-action-icon">👤</div>
+                        <div class="quick-action-title">Update Profile</div>
+                        <div class="quick-action-description">Manage your information</div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- My Competitions -->
+            <section class="mb-12">
+                <h2 class="mb-6">My Competitions</h2>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="active">Active</button>
+                    <button class="tab" data-tab="upcoming">Upcoming</button>
+                    <button class="tab" data-tab="completed">Completed</button>
+                    <button class="tab" data-tab="created">Created by Me</button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="tab-active">
+                    <div id="active-competitions-list"></div>
+                    <div class="empty-state" id="active-empty" style="display: none;">
+                        <div class="empty-state-icon">🏃</div>
+                        <h3 class="empty-state-title">No active competitions</h3>
+                        <p class="empty-state-description">Join a competition to get started!</p>
+                        <a href="home.html" class="btn btn-primary">Browse Competitions</a>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-upcoming">
+                    <div id="upcoming-competitions-list"></div>
+                    <div class="empty-state" id="upcoming-empty" style="display: none;">
+                        <div class="empty-state-icon">📅</div>
+                        <h3 class="empty-state-title">No upcoming competitions</h3>
+                        <p class="empty-state-description">Competitions you've joined will appear here</p>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-completed">
+                    <div id="completed-competitions-list"></div>
+                    <div class="empty-state" id="completed-empty" style="display: none;">
+                        <div class="empty-state-icon">🏁</div>
+                        <h3 class="empty-state-title">No completed competitions</h3>
+                        <p class="empty-state-description">Your competition history will appear here</p>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-created">
+                    <div id="created-competitions-list"></div>
+                    <div class="empty-state" id="created-empty" style="display: none;">
+                        <div class="empty-state-icon">✨</div>
+                        <h3 class="empty-state-title">No competitions created</h3>
+                        <p class="empty-state-description">Create your first competition!</p>
+                        <a href="competition-create.html" class="btn btn-primary">Create Competition</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pending Join Requests (if creator) -->
+            <section class="mb-12" id="join-requests-section" style="display: none;">
+                <h2 class="mb-6">⏳ Pending Join Requests</h2>
+                <div id="join-requests-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/competition.js"></script>
+    <script src="../../js/measurements.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Mobile menu toggle
+        document.getElementById('navbar-toggle').addEventListener('click', () => {
+            document.getElementById('navbar-menu').classList.toggle('active');
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '../auth/login.html';
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+            });
+        });
+
+        // Load statistics
+        function loadStats() {
+            const userCompetitions = Competition.getUserCompetitions(currentUser.id);
+
+            const active = userCompetitions.filter(c => c.status === 'active').length;
+            const completed = userCompetitions.filter(c => c.status === 'completed').length;
+
+            // Count wins
+            let wins = 0;
+            userCompetitions.forEach(comp => {
+                if (comp.winners && comp.winners.find(w => w.userId === currentUser.id)) {
+                    wins++;
+                }
+            });
+
+            // Calculate total weight loss
+            const progress = Measurements.getUserOverallProgress(currentUser.id);
+            const totalLoss = progress ? progress.totalWeightLoss : 0;
+
+            document.getElementById('stat-active-competitions').textContent = active;
+            document.getElementById('stat-completed-competitions').textContent = completed;
+            document.getElementById('stat-wins').textContent = wins;
+            document.getElementById('stat-total-loss').textContent = `${totalLoss} kg`;
+        }
+
+        // Render competition list item
+        function renderCompetitionItem(comp) {
+            const item = document.createElement('div');
+            item.className = 'competition-list-item animate-fade-in';
+            item.onclick = () => window.location.href = `competition-detail.html?id=${comp.id}`;
+
+            const isCreator = comp.creatorId === currentUser.id;
+            const endDate = Utils.getEndDate(comp.startDate, comp.duration);
+
+            item.innerHTML = `
+        <div class="competition-list-header">
+          <div>
+            <div class="competition-list-title">${Utils.escapeHtml(comp.name)}</div>
+            ${isCreator ? '<span class="badge badge-secondary">Creator</span>' : ''}
+          </div>
+          ${UI.getStatusBadge(comp.status).outerHTML}
+        </div>
+        <div class="competition-list-meta">
+          <span>📅 ${Utils.formatDate(comp.startDate, 'short')} - ${Utils.formatDate(endDate, 'short')}</span>
+          <span>👥 ${comp.participants.length} participants</span>
+          <span>⏱️ ${comp.duration} days</span>
+        </div>
+      `;
+
+            return item;
+        }
+
+        // Load competitions by status
+        function loadCompetitions() {
+            const userCompetitions = Competition.getUserCompetitions(currentUser.id);
+
+            // Active
+            const active = userCompetitions.filter(c => c.status === 'active');
+            const activeList = document.getElementById('active-competitions-list');
+            const activeEmpty = document.getElementById('active-empty');
+
+            if (active.length === 0) {
+                activeList.innerHTML = '';
+                activeEmpty.style.display = 'block';
+            } else {
+                activeEmpty.style.display = 'none';
+                activeList.innerHTML = '';
+                active.forEach(comp => activeList.appendChild(renderCompetitionItem(comp)));
+            }
+
+            // Upcoming
+            const upcoming = userCompetitions.filter(c => c.status === 'upcoming');
+            const upcomingList = document.getElementById('upcoming-competitions-list');
+            const upcomingEmpty = document.getElementById('upcoming-empty');
+
+            if (upcoming.length === 0) {
+                upcomingList.innerHTML = '';
+                upcomingEmpty.style.display = 'block';
+            } else {
+                upcomingEmpty.style.display = 'none';
+                upcomingList.innerHTML = '';
+                upcoming.forEach(comp => upcomingList.appendChild(renderCompetitionItem(comp)));
+            }
+
+            // Completed
+            const completed = userCompetitions.filter(c => c.status === 'completed');
+            const completedList = document.getElementById('completed-competitions-list');
+            const completedEmpty = document.getElementById('completed-empty');
+
+            if (completed.length === 0) {
+                completedList.innerHTML = '';
+                completedEmpty.style.display = 'block';
+            } else {
+                completedEmpty.style.display = 'none';
+                completedList.innerHTML = '';
+                completed.forEach(comp => completedList.appendChild(renderCompetitionItem(comp)));
+            }
+
+            // Created by me
+            const created = stateManager.getState('competitions').filter(c => c.creatorId === currentUser.id);
+            const createdList = document.getElementById('created-competitions-list');
+            const createdEmpty = document.getElementById('created-empty');
+
+            if (created.length === 0) {
+                createdList.innerHTML = '';
+                createdEmpty.style.display = 'block';
+            } else {
+                createdEmpty.style.display = 'none';
+                createdList.innerHTML = '';
+                created.forEach(comp => createdList.appendChild(renderCompetitionItem(comp)));
+            }
+        }
+
+        // Load join requests
+        function loadJoinRequests() {
+            const allCompetitions = stateManager.getState('competitions');
+            const myCompetitions = allCompetitions.filter(c => c.creatorId === currentUser.id);
+
+            let totalRequests = 0;
+            const requestsList = document.getElementById('join-requests-list');
+            requestsList.innerHTML = '';
+
+            myCompetitions.forEach(comp => {
+                if (comp.joinRequests && comp.joinRequests.length > 0) {
+                    totalRequests += comp.joinRequests.length;
+
+                    comp.joinRequests.forEach(userId => {
+                        const user = stateManager.getState('users').find(u => u.id === userId);
+                        if (!user) return;
+
+                        const requestCard = document.createElement('div');
+                        requestCard.className = 'competition-list-item';
+                        requestCard.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: var(--space-4);">
+                  ${UI.createAvatar(user, 'md').outerHTML}
+                  <div>
+                    <div style="font-weight: var(--font-weight-semibold);">${Utils.escapeHtml(user.displayName)}</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                      wants to join "${Utils.escapeHtml(comp.name)}"
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: var(--space-2);">
+                  <button class="btn btn-success btn-sm" onclick="approveRequest('${comp.id}', '${userId}')">Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="rejectRequest('${comp.id}', '${userId}')">Reject</button>
+                </div>
+              </div>
+            `;
+                        requestsList.appendChild(requestCard);
+                    });
+                }
+            });
+
+            document.getElementById('join-requests-section').style.display = totalRequests > 0 ? 'block' : 'none';
+        }
+
+        // Approve join request
+        window.approveRequest = function (competitionId, userId) {
+            const result = Competition.approveJoinRequest(competitionId, userId, currentUser.id);
+            if (result.success) {
+                UI.showNotification({
+                    title: 'Approved',
+                    message: 'Join request approved',
+                    type: 'success'
+                });
+                loadJoinRequests();
+                loadCompetitions();
+            } else {
+                UI.alert('Error', result.error, 'danger');
+            }
+        };
+
+        // Reject join request
+        window.rejectRequest = function (competitionId, userId) {
+            const result = Competition.rejectJoinRequest(competitionId, userId, currentUser.id);
+            if (result.success) {
+                UI.showNotification({
+                    title: 'Rejected',
+                    message: 'Join request rejected',
+                    type: 'info'
+                });
+                loadJoinRequests();
+            } else {
+                UI.alert('Error', result.error, 'danger');
+            }
+        };
+
+        // Update competition statuses periodically
+        Competition.updateStatuses();
+        setInterval(() => {
+            Competition.updateStatuses();
+            loadStats();
+            loadCompetitions();
+            loadJoinRequests();
+        }, 60000); // Every minute
+
+        // Initial load
+        loadStats();
+        loadCompetitions();
+        loadJoinRequests();
+    </script>
+</body>
+
+</html>

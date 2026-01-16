@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FitFun</title>
+    <meta name="description" content="Create your FitFun account and start your weight loss journey">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-hero);
+            padding: var(--space-4);
+        }
+
+        .auth-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-2xl);
+            padding: var(--space-8);
+            width: 100%;
+            max-width: 500px;
+            animation: scaleIn var(--transition-base) ease-out;
+            margin: var(--space-6) 0;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .auth-logo h1 {
+            font-family: var(--font-family-heading);
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-extrabold);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-2);
+        }
+
+        .auth-logo p {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-base);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: var(--space-6);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .auth-footer a {
+            color: var(--color-primary-600);
+            font-weight: var(--font-weight-semibold);
+            text-decoration: none;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            margin-top: var(--space-2);
+            font-size: var(--font-size-sm);
+        }
+
+        .password-strength-bar {
+            height: 4px;
+            background: var(--color-neutral-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-top: var(--space-1);
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            transition: width var(--transition-base), background-color var(--transition-base);
+        }
+
+        .password-strength-fill.weak {
+            width: 33%;
+            background-color: var(--color-danger-500);
+        }
+
+        .password-strength-fill.medium {
+            width: 66%;
+            background-color: var(--color-warning-500);
+        }
+
+        .password-strength-fill.strong {
+            width: 100%;
+            background-color: var(--color-success-500);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: var(--space-6);
+            }
+
+            .auth-logo h1 {
+                font-size: var(--font-size-3xl);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <h1>FitFun</h1>
+                <p>Create your account and start your journey</p>
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="email" class="form-label form-label-required">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required
+                        autocomplete="email">
+                    <span class="form-help">⚠️ Email cannot be changed after registration</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label form-label-required">Password</label>
+                    <input type="password" id="password" name="password" class="form-input"
+                        placeholder="Create a strong password" required autocomplete="new-password">
+                    <div class="password-strength" id="password-strength" style="display: none;">
+                        <div class="password-strength-bar">
+                            <div class="password-strength-fill" id="password-strength-fill"></div>
+                        </div>
+                        <span id="password-strength-text"></span>
+                    </div>
+                    <span class="form-help">Min 8 characters with uppercase, lowercase, and number</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="realName" class="form-label form-label-required">Real Name</label>
+                        <input type="text" id="realName" name="realName" class="form-input" placeholder="John Doe"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="displayName" class="form-label form-label-required">Display Name</label>
+                        <input type="text" id="displayName" name="displayName" class="form-input" placeholder="JohnD"
+                            required>
+                        <span class="form-help">Public name shown to others</span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="weight" class="form-label">Weight (KG)</label>
+                        <input type="number" id="weight" name="weight" class="form-input" placeholder="75" step="0.1"
+                            min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="height" class="form-label">Height (CM)</label>
+                        <input type="number" id="height" name="height" class="form-input" placeholder="175" step="0.1"
+                            min="0">
+                    </div>
+                </div>
+
+                <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="register-btn">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check if already logged in
+        if (Auth.isAuthenticated()) {
+            window.location.href = '../user/home.html';
+        }
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const strengthDiv = document.getElementById('password-strength');
+        const strengthFill = document.getElementById('password-strength-fill');
+        const strengthText = document.getElementById('password-strength-text');
+
+        passwordInput.addEventListener('input', (e) => {
+            const password = e.target.value;
+
+            if (password.length === 0) {
+                strengthDiv.style.display = 'none';
+                return;
+            }
+
+            strengthDiv.style.display = 'block';
+            const strength = Utils.getPasswordStrength(password);
+
+            strengthFill.className = 'password-strength-fill ' + strength;
+            strengthText.textContent = 'Password strength: ' + strength.charAt(0).toUpperCase() + strength.slice(1);
+            strengthText.style.color = strength === 'weak' ? 'var(--color-danger-600)' :
+                strength === 'medium' ? 'var(--color-warning-600)' :
+                    'var(--color-success-600)';
+        });
+
+        // Handle registration form submission
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                realName: document.getElementById('realName').value,
+                displayName: document.getElementById('displayName').value,
+                weight: parseFloat(document.getElementById('weight').value) || null,
+                height: parseFloat(document.getElementById('height').value) || null
+            };
+
+            const errorDiv = document.getElementById('error-message');
+            const registerBtn = document.getElementById('register-btn');
+
+            // Hide previous errors
+            errorDiv.style.display = 'none';
+
+            // Show email permanence confirmation modal
+            const confirmed = await UI.confirm({
+                title: '⚠️ Important: Email Permanence',
+                content: `
+          <p style="margin-bottom: var(--space-4);">
+            <strong>Your email address cannot be changed after registration.</strong>
+          </p>
+          <p style="margin-bottom: var(--space-4);">
+            Please confirm that <strong>${Utils.escapeHtml(formData.email)}</strong> is correct.
+          </p>
+          <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+            This email will be used for login and cannot be modified later.
+          </p>
+        `,
+                confirmText: 'Confirm & Register',
+                cancelText: 'Cancel',
+                type: 'warning'
+            });
+
+            if (!confirmed) {
+                return;
+            }
+
+            // Disable button
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner spinner-sm"></span> Creating account...';
+
+            // Simulate async operation
+            setTimeout(() => {
+                const result = Auth.register(formData);
+
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Success',
+                        message: 'Account created successfully! Redirecting...',
+                        type: 'success',
+                        duration: 2000
+                    });
+
+                    // Redirect to home
+                    setTimeout(() => {
+                        window.location.href = '../user/home.html';
+                    }, 1000);
+                } else {
+                    errorDiv.textContent = result.error;
+                    errorDiv.style.display = 'block';
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'Create Account';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

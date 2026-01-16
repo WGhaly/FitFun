@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - FitFun</title>
+    <meta name="description" content="Your FitFun dashboard - View active competitions and track your progress">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        .hero-section {
+            background: var(--gradient-hero);
+            color: white;
+            padding: var(--space-12) 0 var(--space-16);
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            color: white;
+            font-size: var(--font-size-4xl);
+            margin-bottom: var(--space-4);
+        }
+
+        .hero-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: var(--font-size-lg);
+            max-width: 600px;
+            margin: 0 auto var(--space-8);
+        }
+
+        .notification-panel {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-8);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            transition: background-color var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background-color: var(--color-neutral-50);
+        }
+
+        .notification-item.unread {
+            background-color: var(--color-primary-50);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info {
+            background: var(--color-primary-100);
+        }
+
+        .notification-icon.success {
+            background: var(--color-success-100);
+        }
+
+        .notification-icon.warning {
+            background: var(--color-warning-100);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-1);
+        }
+
+        .notification-message {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .notification-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-1);
+        }
+
+        .competition-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .competition-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .competition-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-4);
+        }
+
+        .competition-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .competition-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .competition-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .competition-description {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .competition-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .participant-count {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .testimonial-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--color-success-500);
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .testimonial-author-name {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+        }
+
+        .testimonial-author-meta {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: var(--font-size-3xl);
+            }
+
+            .competition-footer {
+                flex-direction: column;
+                gap: var(--space-3);
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="home.html" class="navbar-brand">FitFun</a>
+
+            <button class="navbar-toggle" id="navbar-toggle">☰</button>
+
+            <ul class="navbar-menu" id="navbar-menu">
+                <li><a href="home.html" class="navbar-link active">Home</a></li>
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="profile.html" class="navbar-link">Profile</a></li>
+                <li><a href="analytics.html" class="navbar-link">Analytics</a></li>
+                <li><button class="btn btn-sm btn-outline" id="logout-btn">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Welcome to FitFun, <span id="user-name">User</span>! 🎉</h1>
+            <p>Join competitions, track your progress, and achieve your fitness goals with a supportive community</p>
+            <a href="competition-create.html" class="btn btn-secondary btn-lg">Create Competition</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        <div class="container">
+            <!-- Priority Notifications Panel -->
+            <section class="mb-12">
+                <h2 class="mb-6">📬 Notifications</h2>
+                <div class="notification-panel" id="notifications-panel">
+                    <div class="empty-state" id="notifications-empty">
+                        <div class="empty-state-icon">🔔</div>
+                        <h3 class="empty-state-title">No notifications</h3>
+                        <p class="empty-state-description">You're all caught up!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Active Public Competitions -->
+            <section class="mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>🏆 Active Competitions</h2>
+                    <div class="flex gap-3">
+                        <select id="sort-competitions" class="form-select" style="width: auto;">
+                            <option value="popularity">Most Popular</option>
+                            <option value="start-date">Starting Soon</option>
+                            <option value="duration">Shortest Duration</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="competitions-grid">
+                    <!-- Competitions will be loaded here -->
+                </div>
+
+                <div class="empty-state" id="competitions-empty" style="display: none;">
+                    <div class="empty-state-icon">🏃</div>
+                    <h3 class="empty-state-title">No active competitions</h3>
+                    <p class="empty-state-description">Be the first to create one!</p>
+                    <a href="competition-create.html" class="btn btn-primary">Create Competition</a>
+                </div>
+            </section>
+
+            <!-- Testimonials / Success Stories -->
+            <section class="mb-12">
+                <h2 class="mb-6">💪 Success Stories</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="testimonials-grid">
+                    <!-- Testimonials will be loaded here -->
+                </div>
+
+                <div class="empty-state" id="testimonials-empty" style="display: none;">
+                    <div class="empty-state-icon">⭐</div>
+                    <h3 class="empty-state-title">No testimonials yet</h3>
+                    <p class="empty-state-description">Success stories will appear here</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/competition.js"></script>
+    <script src="../../js/measurements.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Update user name
+        document.getElementById('user-name').textContent = currentUser.displayName || currentUser.realName;
+
+        // Mobile menu toggle
+        document.getElementById('navbar-toggle').addEventListener('click', () => {
+            document.getElementById('navbar-menu').classList.toggle('active');
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '../auth/login.html';
+        });
+
+        // Load notifications
+        function loadNotifications() {
+            const notifications = stateManager.getState('notifications')
+                .filter(n => n.userId === currentUser.id)
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5); // Show only 5 most recent
+
+            const panel = document.getElementById('notifications-panel');
+            const empty = document.getElementById('notifications-empty');
+
+            if (notifications.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            panel.innerHTML = '';
+
+            notifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = `notification-item ${!notif.read ? 'unread' : ''}`;
+
+                const iconType = notif.type.includes('success') || notif.type.includes('approved') || notif.type.includes('winner') ? 'success' :
+                    notif.type.includes('warning') || notif.type.includes('reminder') ? 'warning' : 'info';
+
+                const iconEmoji = iconType === 'success' ? '✅' : iconType === 'warning' ? '⚠️' : 'ℹ️';
+
+                item.innerHTML = `
+          <div class="notification-icon ${iconType}">${iconEmoji}</div>
+          <div class="notification-content">
+            <div class="notification-title">${Utils.escapeHtml(notif.title)}</div>
+            <div class="notification-message">${Utils.escapeHtml(notif.message)}</div>
+            <div class="notification-time">${Utils.formatDate(notif.createdAt, 'relative')}</div>
+          </div>
+        `;
+
+                panel.appendChild(item);
+            });
+        }
+
+        // Load active competitions
+        function loadCompetitions() {
+            let competitions = Competition.getPublicActive();
+            const grid = document.getElementById('competitions-grid');
+            const empty = document.getElementById('competitions-empty');
+            const sortSelect = document.getElementById('sort-competitions');
+
+            // Apply sorting
+            const sortBy = sortSelect.value;
+            if (sortBy === 'start-date') {
+                competitions = Utils.sortBy(competitions, 'startDate', 'asc');
+            } else if (sortBy === 'duration') {
+                competitions = Utils.sortBy(competitions, 'duration', 'asc');
+            }
+            // Default is already sorted by popularity
+
+            if (competitions.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+            grid.innerHTML = '';
+
+            competitions.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'competition-card animate-fade-in';
+
+                const methodLabels = {
+                    'absolute': 'Absolute Weight Loss (KG)',
+                    'percentage': 'Percentage Weight Loss',
+                    'bmi': 'BMI-based',
+                    'bodyfat': 'Body Fat % Loss'
+                };
+
+                const isFull = comp.maxParticipants && comp.participants.length >= comp.maxParticipants;
+                const isParticipant = comp.participants.includes(currentUser.id);
+
+                card.innerHTML = `
+          <div class="competition-header">
+            <div>
+              <div class="competition-title">${Utils.escapeHtml(comp.name)}</div>
+              ${UI.getStatusBadge(comp.status).outerHTML}
+            </div>
+          </div>
+          
+          <div class="competition-meta">
+            <div class="competition-meta-item">
+              📅 Starts: ${Utils.formatDate(comp.startDate, 'short')}
+            </div>
+            <div class="competition-meta-item">
+              ⏱️ ${comp.duration} days
+            </div>
+            <div class="competition-meta-item">
+              📊 ${methodLabels[comp.measurementMethod]}
+            </div>
+          </div>
+          
+          <div class="competition-description">
+            ${Utils.escapeHtml(comp.description || 'No description provided')}
+          </div>
+          
+          ${comp.prizeDescription ? `
+            <div style="background: var(--color-warning-50); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: var(--font-size-sm);">
+              🏆 Prize: ${Utils.escapeHtml(comp.prizeDescription)}
+            </div>
+          ` : ''}
+          
+          <div class="competition-footer">
+            <div class="participant-count">
+              👥 ${comp.participants.length}${comp.maxParticipants ? `/${comp.maxParticipants}` : ''} participants
+            </div>
+            ${isParticipant ?
+                        '<span class="badge badge-success">Joined</span>' :
+                        isFull ?
+                            '<span class="badge badge-danger">Full</span>' :
+                            `<button class="btn btn-primary btn-sm" onclick="joinCompetition('${comp.id}')">Join</button>`
+                    }
+          </div>
+        `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Join competition
+        window.joinCompetition = async function (competitionId) {
+            const result = Competition.join(competitionId, currentUser.id);
+
+            if (result.success) {
+                if (result.requiresApproval) {
+                    UI.showNotification({
+                        title: 'Request Sent',
+                        message: 'Your join request has been sent to the competition creator',
+                        type: 'info'
+                    });
+                } else {
+                    UI.showNotification({
+                        title: 'Success',
+                        message: 'You have joined the competition!',
+                        type: 'success'
+                    });
+                }
+                loadCompetitions();
+                loadNotifications();
+            } else {
+                UI.alert('Cannot Join', result.error, 'danger');
+            }
+        };
+
+        // Load testimonials
+        function loadTestimonials() {
+            const testimonials = stateManager.getState('testimonials')
+                .filter(t => t.approved)
+                .slice(0, 4); // Show only 4
+
+            const grid = document.getElementById('testimonials-grid');
+            const empty = document.getElementById('testimonials-empty');
+
+            if (testimonials.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+            grid.innerHTML = '';
+
+            testimonials.forEach(test => {
+                const card = document.createElement('div');
+                card.className = 'testimonial-card animate-fade-in';
+
+                const user = stateManager.getState('users').find(u => u.id === test.userId);
+
+                card.innerHTML = `
+          <div class="testimonial-content">
+            "${Utils.escapeHtml(test.content)}"
+          </div>
+          <div class="testimonial-author">
+            ${UI.createAvatar(user, 'md').outerHTML}
+            <div>
+              <div class="testimonial-author-name">${Utils.escapeHtml(user.displayName)}</div>
+              <div class="testimonial-author-meta">${Utils.formatDate(test.createdAt, 'short')}</div>
+            </div>
+          </div>
+        `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Sort competitions
+        document.getElementById('sort-competitions').addEventListener('change', loadCompetitions);
+
+        // Update competition statuses periodically
+        Competition.updateStatuses();
+        setInterval(() => {
+            Competition.updateStatuses();
+            loadCompetitions();
+            loadNotifications();
+        }, 60000); // Every minute
+
+        // Initial load
+        loadNotifications();
+        loadCompetitions();
+        loadTestimonials();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - FitFun</title>
+    <meta name="description" content="Admin login for FitFun platform">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        body {
+            background: var(--gradient-hero);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+
+        .admin-login-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            color: white;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            margin-bottom: var(--space-6);
+        }
+
+        .admin-badge::before {
+            content: "🔐";
+            font-size: 1.2em;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .login-header h1 {
+            font-family: var(--font-heading);
+            font-size: var(--text-3xl);
+            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .login-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--text-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+            font-size: var(--text-sm);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-base);
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .error-message {
+            background: var(--color-error-light);
+            color: var(--color-error);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: var(--color-success-light);
+            color: var(--color-success);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--text-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-password-section {
+            display: none;
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .reset-password-section.show {
+            display: block;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: var(--space-6);
+        }
+
+        .back-link a {
+            color: white;
+            text-decoration: none;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .back-link a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-login-container">
+        <div style="text-align: center;">
+            <span class="admin-badge">Admin Portal</span>
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Admin Login</h1>
+                <p>Access the FitFun administration panel</p>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-login" id="login-btn">
+                    Sign In
+                </button>
+            </form>
+
+            <div id="reset-password-section" class="reset-password-section">
+                <h3 style="margin-bottom: var(--space-4); font-size: var(--text-lg);">Reset Your Password</h3>
+                <p
+                    style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-bottom: var(--space-4);">
+                    This is your first login. Please set a new password.
+                </p>
+
+                <form id="reset-password-form">
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" required minlength="8">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" required minlength="8">
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        Set New Password
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="../../index.html">← Back to User Portal</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+
+    <script>
+        const loginForm = document.getElementById('admin-login-form');
+        const resetPasswordSection = document.getElementById('reset-password-section');
+        const resetPasswordForm = document.getElementById('reset-password-form');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const loginBtn = document.getElementById('login-btn');
+
+        let pendingAdminEmail = null;
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            successMessage.classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+        }
+
+        function hideMessages() {
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const result = Auth.adminLogin(email, password);
+
+                if (result.success) {
+                    // Successful login
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '../admin/dashboard.html';
+                    }, 1000);
+                } else if (result.requiresPasswordReset) {
+                    // Password reset required
+                    pendingAdminEmail = email;
+                    loginForm.style.display = 'none';
+                    resetPasswordSection.classList.add('show');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                } else {
+                    showError(result.message || 'Invalid credentials');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign In';
+                }
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
+            }
+
+            try {
+                const result = Auth.resetAdminPassword(pendingAdminEmail, newPassword);
+
+                if (result.success) {
+                    showSuccess('Password updated successfully! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '../admin/dashboard.html';
+                    }, 1500);
+                } else {
+                    showError(result.message || 'Failed to reset password');
+                }
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+            }
+        });
+
+        // Redirect if already logged in as admin
+        if (Auth.isAuthenticated() && Auth.isAdmin()) {
+            const user = Auth.getCurrentUser();
+            if (!user.requiresPasswordReset) {
+                window.location.href = '../admin/dashboard.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

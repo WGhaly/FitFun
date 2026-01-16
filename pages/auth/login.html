@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - FitFun</title>
+  <meta name="description" content="Login to FitFun - Join weight loss competitions and track your progress">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../../styles/design-system.css">
+  <link rel="stylesheet" href="../../styles/layout.css">
+  <link rel="stylesheet" href="../../styles/components.css">
+  
+  <style>
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient-hero);
+      padding: var(--space-4);
+    }
+
+    .auth-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-2xl);
+      padding: var(--space-8);
+      width: 100%;
+      max-width: 450px;
+      animation: scaleIn var(--transition-base) ease-out;
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+
+    .auth-logo h1 {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-extrabold);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--space-2);
+    }
+
+    .auth-logo p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+    }
+
+    .auth-divider {
+      text-align: center;
+      margin: var(--space-6) 0;
+      position: relative;
+    }
+
+    .auth-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .auth-divider span {
+      background: var(--color-surface);
+      padding: 0 var(--space-4);
+      position: relative;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: var(--space-6);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .auth-footer a {
+      color: var(--color-primary-600);
+      font-weight: var(--font-weight-semibold);
+      text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: var(--space-6);
+      }
+
+      .auth-logo h1 {
+        font-size: var(--font-size-3xl);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>FitFun</h1>
+        <p>Welcome back! Login to continue your journey</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email" class="form-label form-label-required">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label form-label-required">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+          Login
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="register.html">Sign up</a>
+      </div>
+
+      <div class="auth-divider">
+        <span>Demo Credentials</span>
+      </div>
+
+      <div style="background: var(--color-neutral-50); padding: var(--space-4); border-radius: var(--radius-lg); font-size: var(--font-size-sm);">
+        <p style="margin-bottom: var(--space-2);"><strong>User:</strong> john@example.com / Password123!</p>
+        <p style="margin: 0;"><strong>Admin:</strong> admin@fitfun.com / Admin123!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../../js/state.js"></script>
+  <script src="../../js/utils.js"></script>
+  <script src="../../js/auth.js"></script>
+  <script src="../../js/ui.js"></script>
+
+  <script>
+    // Check if already logged in
+    if (Auth.isAuthenticated()) {
+      const user = Auth.getCurrentUser();
+      if (Auth.isAdmin()) {
+        window.location.href = '../../admin.html';
+      } else {
+        window.location.href = '../user/home.html';
+      }
+    }
+
+    // Handle login form submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error-message');
+      const loginBtn = document.getElementById('login-btn');
+      
+      // Hide previous errors
+      errorDiv.style.display = 'none';
+      
+      // Disable button
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<span class="spinner spinner-sm"></span> Logging in...';
+      
+      // Simulate async operation
+      setTimeout(() => {
+        const result = Auth.login(email, password);
+        
+        if (result.success) {
+          UI.showNotification({
+            title: 'Success',
+            message: 'Login successful! Redirecting...',
+            type: 'success',
+            duration: 2000
+          });
+          
+          // Redirect based on role
+          setTimeout(() => {
+            if (Auth.isAdmin()) {
+              window.location.href = '../../admin.html';
+            } else {
+              window.location.href = '../user/home.html';
+            }
+          }, 1000);
+        } else {
+          errorDiv.textContent = result.error;
+          errorDiv.style.display = 'block';
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Login';
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

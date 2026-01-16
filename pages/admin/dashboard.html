@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FitFun</title>
+    <meta name="description" content="FitFun admin dashboard">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        body {
+            background: var(--color-background);
+            min-height: 100vh;
+        }
+
+        /* Admin Navigation */
+        .admin-nav {
+            background: white;
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-4) 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-logo {
+            font-family: var(--font-heading);
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .admin-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .admin-nav-link {
+            padding: var(--space-2) var(--space-4);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            transition: all 0.2s;
+        }
+
+        .admin-nav-link:hover {
+            background: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        .admin-nav-link.active {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .admin-user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .admin-user-name {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-text);
+        }
+
+        .btn-logout {
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: var(--color-error-dark);
+        }
+
+        /* Dashboard Content */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .dashboard-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .dashboard-header h1 {
+            font-family: var(--font-heading);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .dashboard-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--text-lg);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-2xl);
+        }
+
+        .stat-card-icon.primary {
+            background: var(--color-primary-light);
+        }
+
+        .stat-card-icon.success {
+            background: var(--color-success-light);
+        }
+
+        .stat-card-icon.warning {
+            background: var(--color-warning-light);
+        }
+
+        .stat-card-icon.info {
+            background: var(--color-info-light);
+        }
+
+        .stat-card-value {
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-card-label {
+            color: var(--color-text-secondary);
+            font-size: var(--text-sm);
+            font-weight: 500;
+        }
+
+        .stat-card-change {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-md);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            margin-top: var(--space-2);
+        }
+
+        .stat-card-change.positive {
+            background: var(--color-success-light);
+            color: var(--color-success);
+        }
+
+        .stat-card-change.negative {
+            background: var(--color-error-light);
+            color: var(--color-error);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-8);
+        }
+
+        .quick-actions h2 {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-6);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .action-btn {
+            padding: var(--space-4);
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .recent-activity h2 {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-6);
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--color-primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: var(--space-1);
+        }
+
+        .activity-time {
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <div class="admin-nav-container">
+            <div class="admin-logo">
+                FitFun <span class="admin-badge">ADMIN</span>
+            </div>
+
+            <div class="admin-nav-links">
+                <a href="dashboard.html" class="admin-nav-link active">Dashboard</a>
+                <a href="users.html" class="admin-nav-link">Users</a>
+                <a href="competitions.html" class="admin-nav-link">Competitions</a>
+                <a href="testimonials.html" class="admin-nav-link">Testimonials</a>
+                <a href="admins.html" class="admin-nav-link" id="admins-link" style="display: none;">Admins</a>
+                <a href="insights.html" class="admin-nav-link">Insights</a>
+            </div>
+
+            <div class="admin-user-menu">
+                <span class="admin-user-name" id="admin-name">Admin</span>
+                <button class="btn-logout" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Dashboard</h1>
+            <p>Platform overview and statistics</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon primary">👥</div>
+                </div>
+                <div class="stat-card-value" id="total-users">0</div>
+                <div class="stat-card-label">Total Users</div>
+                <span class="stat-card-change positive" id="users-change">+0 this week</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon success">🏆</div>
+                </div>
+                <div class="stat-card-value" id="active-competitions">0</div>
+                <div class="stat-card-label">Active Competitions</div>
+                <span class="stat-card-change positive" id="competitions-change">+0 this week</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon warning">✅</div>
+                </div>
+                <div class="stat-card-value" id="completed-competitions">0</div>
+                <div class="stat-card-label">Completed Competitions</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon info">💬</div>
+                </div>
+                <div class="stat-card-value" id="pending-testimonials">0</div>
+                <div class="stat-card-label">Pending Testimonials</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-grid">
+                <a href="users.html" class="action-btn">Manage Users</a>
+                <a href="competitions.html" class="action-btn">Manage Competitions</a>
+                <a href="testimonials.html" class="action-btn">Review Testimonials</a>
+                <a href="insights.html" class="action-btn">View Insights</a>
+                <a href="admins.html" class="action-btn" id="manage-admins-btn" style="display: none;">Manage Admins</a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h2>Recent Activity</h2>
+            <div class="activity-list" id="activity-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <p>No recent activity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/competition.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated() || !Auth.isAdmin()) {
+            window.location.href = '../auth/admin-login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Show admin name
+        document.getElementById('admin-name').textContent = currentUser.displayName || currentUser.email;
+
+        // Show super admin options
+        if (currentUser.role === 'superadmin') {
+            document.getElementById('admins-link').style.display = 'block';
+            document.getElementById('manage-admins-btn').style.display = 'block';
+        }
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                Auth.logout();
+                window.location.href = '../auth/admin-login.html';
+            }
+        });
+
+        // Load dashboard data
+        function loadDashboardData() {
+            const state = State.getState();
+            const users = state.users || [];
+            const competitions = state.competitions || [];
+            const testimonials = state.testimonials || [];
+
+            // Calculate stats
+            const totalUsers = users.filter(u => u.role === 'user').length;
+            const activeCompetitions = competitions.filter(c => c.status === 'active').length;
+            const completedCompetitions = competitions.filter(c => c.status === 'completed').length;
+            const pendingTestimonials = testimonials.filter(t => t.status === 'pending').length;
+
+            // Update stats
+            document.getElementById('total-users').textContent = totalUsers;
+            document.getElementById('active-competitions').textContent = activeCompetitions;
+            document.getElementById('completed-competitions').textContent = completedCompetitions;
+            document.getElementById('pending-testimonials').textContent = pendingTestimonials;
+
+            // Calculate weekly changes (mock data for now)
+            const usersThisWeek = Math.floor(totalUsers * 0.1);
+            const competitionsThisWeek = Math.floor(activeCompetitions * 0.15);
+
+            document.getElementById('users-change').textContent = `+${usersThisWeek} this week`;
+            document.getElementById('competitions-change').textContent = `+${competitionsThisWeek} this week`;
+
+            // Load recent activity
+            loadRecentActivity();
+        }
+
+        function loadRecentActivity() {
+            const state = State.getState();
+            const activityList = document.getElementById('activity-list');
+
+            // Get recent competitions and user registrations
+            const recentCompetitions = (state.competitions || [])
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+
+            const recentUsers = (state.users || [])
+                .filter(u => u.role === 'user')
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+
+            // Combine and sort by date
+            const activities = [
+                ...recentCompetitions.map(c => ({
+                    type: 'competition',
+                    title: `New competition: ${c.name}`,
+                    time: c.createdAt,
+                    icon: '🏆'
+                })),
+                ...recentUsers.map(u => ({
+                    type: 'user',
+                    title: `New user registered: ${u.displayName}`,
+                    time: u.createdAt,
+                    icon: '👤'
+                }))
+            ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 10);
+
+            if (activities.length === 0) {
+                activityList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No recent activity</p>
+                    </div>
+                `;
+                return;
+            }
+
+            activityList.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">${activity.icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-time">${Utils.formatRelativeTime(activity.time)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load data on page load
+        loadDashboardData();
+
+        // Refresh data every 30 seconds
+        setInterval(loadDashboardData, 30000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitFun Admin Portal</title>
+    <meta name="description" content="Admin portal for managing FitFun platform">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/design-system.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+
+<body>
+    <div
+        style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--gradient-hero);">
+        <div style="text-align: center; color: white;">
+            <div class="spinner spinner-lg"
+                style="border-color: rgba(255,255,255,0.3); border-top-color: white; margin: 0 auto var(--space-4);">
+            </div>
+            <p>Loading Admin Portal...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/state.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Redirect based on authentication status
+        if (Auth.isAuthenticated()) {
+            if (Auth.isAdmin()) {
+                window.location.href = 'pages/admin/dashboard.html';
+            } else {
+                // Regular users should not access admin portal
+                alert('Access denied. Admin credentials required.');
+                Auth.logout();
+                window.location.href = 'pages/auth/login.html';
+            }
+        } else {
+            window.location.href = 'pages/auth/admin-login.html';
+        }
+    </script>
+</body>
+
+</html>

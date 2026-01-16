@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Insights - FitFun Admin</title>
+    <meta name="description" content="Platform analytics and insights">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        body {
+            background: var(--color-background);
+            min-height: 100vh;
+        }
+
+        /* Admin Navigation */
+        .admin-nav {
+            background: white;
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-4) 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-logo {
+            font-family: var(--font-heading);
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .admin-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .admin-nav-link {
+            padding: var(--space-2) var(--space-4);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            font-size: var(--text-sm);
+            transition: all 0.2s;
+        }
+
+        .admin-nav-link:hover {
+            background: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        .admin-nav-link.active {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .admin-user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .admin-user-name {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--color-text);
+        }
+
+        .btn-logout {
+            padding: var(--space-2) var(--space-4);
+            background: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: var(--color-error-dark);
+        }
+
+        /* Page Content */
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .page-header p {
+            color: var(--color-text-secondary);
+            font-size: var(--text-lg);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-2xl);
+        }
+
+        .stat-card-icon.primary {
+            background: var(--color-primary-light);
+        }
+
+        .stat-card-icon.success {
+            background: var(--color-success-light);
+        }
+
+        .stat-card-icon.warning {
+            background: var(--color-warning-light);
+        }
+
+        .stat-card-icon.info {
+            background: var(--color-info-light);
+        }
+
+        .stat-card-value {
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-card-label {
+            color: var(--color-text-secondary);
+            font-size: var(--text-sm);
+            font-weight: 500;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            margin-bottom: var(--space-8);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-6);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .chart-card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-card h3 {
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+
+        /* Location Data */
+        .location-section {
+            margin-bottom: var(--space-8);
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .location-card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .location-card h3 {
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+
+        .location-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .location-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .location-name {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .location-count {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .location-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .location-bar-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-full);
+            transition: width 0.3s;
+        }
+
+        .location-number {
+            font-weight: 700;
+            color: var(--color-primary);
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Competition Stats */
+        .competition-stats {
+            background: white;
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .competition-stats h3 {
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+        }
+
+        .stats-item-label {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .stats-item-value {
+            font-weight: 700;
+            font-size: var(--text-lg);
+            color: var(--color-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-8);
+            color: var(--color-text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <div class="admin-nav-container">
+            <div class="admin-logo">
+                FitFun <span class="admin-badge">ADMIN</span>
+            </div>
+
+            <div class="admin-nav-links">
+                <a href="dashboard.html" class="admin-nav-link">Dashboard</a>
+                <a href="users.html" class="admin-nav-link">Users</a>
+                <a href="competitions.html" class="admin-nav-link">Competitions</a>
+                <a href="testimonials.html" class="admin-nav-link">Testimonials</a>
+                <a href="admins.html" class="admin-nav-link" id="admins-link" style="display: none;">Admins</a>
+                <a href="insights.html" class="admin-nav-link active">Insights</a>
+            </div>
+
+            <div class="admin-user-menu">
+                <span class="admin-user-name" id="admin-name">Admin</span>
+                <button class="btn-logout" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>Platform Insights</h1>
+            <p>Aggregated statistics and analytics</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon primary">👥</div>
+                </div>
+                <div class="stat-card-value" id="total-users">0</div>
+                <div class="stat-card-label">Total Users</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon success">🏆</div>
+                </div>
+                <div class="stat-card-value" id="total-competitions">0</div>
+                <div class="stat-card-label">Total Competitions</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon warning">⚖️</div>
+                </div>
+                <div class="stat-card-value" id="total-weight-lost">0 kg</div>
+                <div class="stat-card-label">Total Weight Lost</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon info">💬</div>
+                </div>
+                <div class="stat-card-value" id="total-testimonials">0</div>
+                <div class="stat-card-label">Total Testimonials</div>
+            </div>
+        </div>
+
+        <!-- Location Data -->
+        <div class="location-section">
+            <h2 class="section-title">Geographic Distribution</h2>
+            <div class="location-grid">
+                <div class="location-card">
+                    <h3>Users by Country</h3>
+                    <div class="location-list" id="countries-list">
+                        <div class="empty-state">No data available</div>
+                    </div>
+                </div>
+
+                <div class="location-card">
+                    <h3>Users by City</h3>
+                    <div class="location-list" id="cities-list">
+                        <div class="empty-state">No data available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competition Statistics -->
+        <div class="competition-stats">
+            <h3>Competition Statistics</h3>
+            <div class="stats-list">
+                <div class="stats-item">
+                    <span class="stats-item-label">Average Participants per Competition</span>
+                    <span class="stats-item-value" id="avg-participants">0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-item-label">Most Popular Measurement Method</span>
+                    <span class="stats-item-value" id="popular-method">N/A</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-item-label">Average Competition Duration</span>
+                    <span class="stats-item-value" id="avg-duration">0 days</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-item-label">Public vs Private Competitions</span>
+                    <span class="stats-item-value" id="public-private-ratio">0 / 0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-item-label">Completion Rate</span>
+                    <span class="stats-item-value" id="completion-rate">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated() || !Auth.isAdmin()) {
+            window.location.href = '../auth/admin-login.html';
+        }
+
+        const currentUser = Auth.getCurrentUser();
+
+        // Show admin name
+        document.getElementById('admin-name').textContent = currentUser.displayName || currentUser.email;
+
+        // Show super admin options
+        if (currentUser.role === 'superadmin') {
+            document.getElementById('admins-link').style.display = 'block';
+        }
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                Auth.logout();
+                window.location.href = '../auth/admin-login.html';
+            }
+        });
+
+        // Load insights
+        function loadInsights() {
+            const state = State.getState();
+            const users = state.users || [];
+            const competitions = state.competitions || [];
+            const testimonials = state.testimonials || [];
+            const measurements = state.measurements || [];
+
+            // Basic stats
+            document.getElementById('total-users').textContent = users.length;
+            document.getElementById('total-competitions').textContent = competitions.length;
+            document.getElementById('total-testimonials').textContent = testimonials.length;
+
+            // Calculate total weight lost
+            const totalWeightLost = measurements.reduce((sum, m) => {
+                if (m.weightLost) {
+                    return sum + m.weightLost;
+                }
+                return sum;
+            }, 0);
+            document.getElementById('total-weight-lost').textContent = `${totalWeightLost.toFixed(1)} kg`;
+
+            // Geographic distribution
+            loadGeographicData(users);
+
+            // Competition statistics
+            loadCompetitionStats(competitions);
+        }
+
+        function loadGeographicData(users) {
+            // Count by country
+            const countryCount = {};
+            const cityCount = {};
+
+            users.forEach(user => {
+                if (user.country) {
+                    countryCount[user.country] = (countryCount[user.country] || 0) + 1;
+                }
+                if (user.city) {
+                    cityCount[user.city] = (cityCount[user.city] || 0) + 1;
+                }
+            });
+
+            // Sort and display countries
+            const sortedCountries = Object.entries(countryCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const countriesList = document.getElementById('countries-list');
+            if (sortedCountries.length === 0) {
+                countriesList.innerHTML = '<div class="empty-state">No data available</div>';
+            } else {
+                const maxCountryCount = sortedCountries[0][1];
+                countriesList.innerHTML = sortedCountries.map(([country, count]) => {
+                    const percentage = (count / maxCountryCount) * 100;
+                    return `
+                        <div class="location-item">
+                            <span class="location-name">${country}</span>
+                            <div class="location-count">
+                                <div class="location-bar">
+                                    <div class="location-bar-fill" style="width: ${percentage}%"></div>
+                                </div>
+                                <span class="location-number">${count}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Sort and display cities
+            const sortedCities = Object.entries(cityCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const citiesList = document.getElementById('cities-list');
+            if (sortedCities.length === 0) {
+                citiesList.innerHTML = '<div class="empty-state">No data available</div>';
+            } else {
+                const maxCityCount = sortedCities[0][1];
+                citiesList.innerHTML = sortedCities.map(([city, count]) => {
+                    const percentage = (count / maxCityCount) * 100;
+                    return `
+                        <div class="location-item">
+                            <span class="location-name">${city}</span>
+                            <div class="location-count">
+                                <div class="location-bar">
+                                    <div class="location-bar-fill" style="width: ${percentage}%"></div>
+                                </div>
+                                <span class="location-number">${count}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function loadCompetitionStats(competitions) {
+            if (competitions.length === 0) {
+                document.getElementById('avg-participants').textContent = '0';
+                document.getElementById('popular-method').textContent = 'N/A';
+                document.getElementById('avg-duration').textContent = '0 days';
+                document.getElementById('public-private-ratio').textContent = '0 / 0';
+                document.getElementById('completion-rate').textContent = '0%';
+                return;
+            }
+
+            // Average participants
+            const avgParticipants = competitions.reduce((sum, c) => sum + (c.participants?.length || 0), 0) / competitions.length;
+            document.getElementById('avg-participants').textContent = avgParticipants.toFixed(1);
+
+            // Most popular measurement method
+            const methodCount = {};
+            competitions.forEach(c => {
+                methodCount[c.measurementMethod] = (methodCount[c.measurementMethod] || 0) + 1;
+            });
+            const popularMethod = Object.entries(methodCount).sort((a, b) => b[1] - a[1])[0];
+            const methodNames = {
+                'percentage': 'Percentage Weight Loss',
+                'absolute': 'Absolute Weight Loss',
+                'bmi': 'BMI-based',
+                'bodyfat': 'Body Fat %'
+            };
+            document.getElementById('popular-method').textContent = methodNames[popularMethod[0]] || popularMethod[0];
+
+            // Average duration
+            const avgDuration = competitions.reduce((sum, c) => sum + (c.duration || 0), 0) / competitions.length;
+            document.getElementById('avg-duration').textContent = `${Math.round(avgDuration)} days`;
+
+            // Public vs Private
+            const publicCount = competitions.filter(c => c.isPublic).length;
+            const privateCount = competitions.length - publicCount;
+            document.getElementById('public-private-ratio').textContent = `${publicCount} / ${privateCount}`;
+
+            // Completion rate
+            const completedCount = competitions.filter(c => c.status === 'completed').length;
+            const completionRate = (completedCount / competitions.length) * 100;
+            document.getElementById('completion-rate').textContent = `${completionRate.toFixed(1)}%`;
+        }
+
+        // Load insights on page load
+        loadInsights();
+
+        // Refresh every 30 seconds
+        setInterval(loadInsights, 30000);
+    </script>
+</body>
+
+</html>

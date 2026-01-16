@@ -1,0 +1,104 @@
+{
+  "users": [
+    {
+      "id": "user_1768584610736_e9w7u2vxk",
+      "email": "john@example.com",
+      "password_hash": "$2a$10$gRYXVU7GVIQZzGqXyQRm8uRhkJ9QQmi5E3yQesF3Nb5fIgtZITXVm",
+      "role": "user",
+      "real_name": "John Doe",
+      "display_name": "JohnD",
+      "weight": 85,
+      "height": 175,
+      "bmi": 27.8,
+      "country": "United States",
+      "city": "New York",
+      "created_at": "2026-01-16T17:30:10.736Z",
+      "updated_at": "2026-01-16T17:30:10.736Z"
+    },
+    {
+      "id": "user_1768584610802_7y0rxugp7",
+      "email": "sarah@example.com",
+      "password_hash": "$2a$10$zkM9HuM3V1yHOQyCy/muHuGhJtDSz5NUrTGmqisUsrcnD5IlQIL.6",
+      "role": "user",
+      "real_name": "Sarah Smith",
+      "display_name": "SarahFit",
+      "weight": 70,
+      "height": 165,
+      "bmi": 25.7,
+      "country": "United States",
+      "city": "Los Angeles",
+      "created_at": "2026-01-16T17:30:10.802Z",
+      "updated_at": "2026-01-16T17:30:10.802Z"
+    }
+  ],
+  "admins": [
+    {
+      "id": "admin_1768584610671_3fq6ap1gj",
+      "email": "admin@fitfun.com",
+      "password_hash": "$2a$10$R5fPICBvEaxZKidlFeKAbewtSho37Kk9zkNlryLFRpU.vy/HjduUK",
+      "role": "super_admin",
+      "name": "Super Admin",
+      "must_reset_password": false,
+      "created_at": "2026-01-16T17:30:10.671Z"
+    }
+  ],
+  "competitions": [
+    {
+      "id": "comp_1768584610802_g24wik0q9",
+      "name": "Summer Weight Loss Challenge",
+      "description": "Join us for a 12-week transformation journey!",
+      "creator_id": "user_1768584610736_e9w7u2vxk",
+      "is_public": true,
+      "join_mode": "free",
+      "max_participants": 50,
+      "start_date": "2026-01-23T17:30:10.802Z",
+      "duration": 84,
+      "measurement_method": "percentage",
+      "prize_description": "Winner gets a fitness tracker and gym membership!",
+      "winner_distribution": "1st+2nd+3rd",
+      "status": "upcoming",
+      "created_at": "2026-01-16T17:30:10.802Z",
+      "updated_at": "2026-01-16T17:30:10.802Z"
+    }
+  ],
+  "competition_participants": [
+    {
+      "id": "part_1768584610802_9hbfiqsri",
+      "competition_id": "comp_1768584610802_g24wik0q9",
+      "user_id": "user_1768584610736_e9w7u2vxk",
+      "approved": true,
+      "joined_at": "2026-01-16T17:30:10.802Z"
+    },
+    {
+      "id": "part_1768584610802_mlu8iyjyi",
+      "competition_id": "comp_1768584610802_g24wik0q9",
+      "user_id": "user_1768584610802_7y0rxugp7",
+      "approved": true,
+      "joined_at": "2026-01-16T17:30:10.802Z"
+    }
+  ],
+  "measurements": [],
+  "testimonials": [
+    {
+      "id": "test_1768584610802_ytnh44f85",
+      "user_id": "user_1768584610736_e9w7u2vxk",
+      "competition_id": "comp_1768584610802_g24wik0q9",
+      "text": "This competition completely changed my life! I lost 15kg and feel amazing. The community support was incredible and kept me motivated throughout the journey.",
+      "weight_lost": 15,
+      "status": "pending",
+      "created_at": "2026-01-16T17:30:10.803Z"
+    },
+    {
+      "id": "test_1768584610803_qiz1an6f1",
+      "user_id": "user_1768584610802_7y0rxugp7",
+      "competition_id": "comp_1768584610802_g24wik0q9",
+      "text": "Best decision I ever made! The structured approach and friendly competition helped me stay on track. Down 10kg and counting!",
+      "weight_lost": 10,
+      "status": "approved",
+      "created_at": "2026-01-16T17:30:10.803Z",
+      "approved_at": "2026-01-16T17:30:10.803Z",
+      "approved_by": "admin_1768584610671_3fq6ap1gj"
+    }
+  ],
+  "notifications": []
+}

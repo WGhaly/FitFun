@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - FitFun</title>
+    <meta name="description" content="Manage your FitFun profile and settings">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles/design-system.css">
+    <link rel="stylesheet" href="../../styles/layout.css">
+    <link rel="stylesheet" href="../../styles/components.css">
+
+    <style>
+        .profile-header {
+            background: var(--gradient-hero);
+            color: white;
+            padding: var(--space-8) 0;
+            margin-bottom: var(--space-8);
+            text-align: center;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-full);
+            margin: 0 auto var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-5xl);
+            font-weight: var(--font-weight-bold);
+            background: rgba(255, 255, 255, 0.2);
+            border: 4px solid white;
+            overflow: hidden;
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-2);
+        }
+
+        .profile-email {
+            opacity: 0.9;
+            font-size: var(--font-size-lg);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-box {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-box-value {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-600);
+            margin-bottom: var(--space-1);
+        }
+
+        .stat-box-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .section-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-6);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .image-upload-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: var(--color-neutral-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: var(--space-3);
+        }
+
+        .image-upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .danger-zone {
+            background: var(--color-danger-50);
+            border: 2px solid var(--color-danger-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+        }
+
+        [data-theme="dark"] .danger-zone {
+            background: var(--color-danger-900);
+            border-color: var(--color-danger-700);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="home.html" class="navbar-brand">FitFun</a>
+
+            <button class="navbar-toggle" id="navbar-toggle">☰</button>
+
+            <ul class="navbar-menu" id="navbar-menu">
+                <li><a href="home.html" class="navbar-link">Home</a></li>
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="profile.html" class="navbar-link active">Profile</a></li>
+                <li><a href="analytics.html" class="navbar-link">Analytics</a></li>
+                <li><button class="btn btn-sm btn-outline" id="logout-btn">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <section class="profile-header">
+        <div class="container">
+            <div class="profile-avatar-large" id="header-avatar">
+                <!-- Avatar will be loaded here -->
+            </div>
+            <h1 class="profile-name" id="header-name">Loading...</h1>
+            <p class="profile-email" id="header-email"></p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        <div class="container" style="max-width: 900px;">
+            <!-- Quick Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-box-value" id="stat-weight">-</div>
+                    <div class="stat-box-label">Current Weight (KG)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-value" id="stat-height">-</div>
+                    <div class="stat-box-label">Height (CM)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-value" id="stat-bmi">-</div>
+                    <div class="stat-box-label">BMI</div>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>Personal Information</h2>
+                    <button class="btn btn-primary" id="edit-personal-btn">Edit</button>
+                </div>
+
+                <form id="personal-info-form" style="display: none;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="realName" class="form-label form-label-required">Real Name</label>
+                            <input type="text" id="realName" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="displayName" class="form-label form-label-required">Display Name</label>
+                            <input type="text" id="displayName" class="form-input" required>
+                            <span class="form-help">This is how others see you</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> Your email address cannot be changed after registration.
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-ghost" id="cancel-personal-btn">Cancel</button>
+                    </div>
+                </form>
+
+                <div id="personal-info-display">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Real Name</div>
+                            <div class="font-semibold" id="display-realName">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Display Name</div>
+                            <div class="font-semibold" id="display-displayName">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Email</div>
+                            <div class="font-semibold" id="display-email">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Member Since</div>
+                            <div class="font-semibold" id="display-memberSince">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body Measurements -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>Body Measurements</h2>
+                    <button class="btn btn-primary" id="edit-measurements-btn">Edit</button>
+                </div>
+
+                <form id="measurements-form" style="display: none;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="weight" class="form-label">Weight (KG)</label>
+                            <input type="number" id="weight" class="form-input" step="0.1" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="height" class="form-label">Height (CM)</label>
+                            <input type="number" id="height" class="form-input" step="0.1" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bodyFatPercentage" class="form-label">Body Fat %</label>
+                            <input type="number" id="bodyFatPercentage" class="form-input" step="0.1" min="0" max="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="muscleMassPercentage" class="form-label">Muscle Mass %</label>
+                            <input type="number" id="muscleMassPercentage" class="form-input" step="0.1" min="0"
+                                max="100">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> BMI will be calculated automatically from weight and height.
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-ghost" id="cancel-measurements-btn">Cancel</button>
+                    </div>
+                </form>
+
+                <div id="measurements-display">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Weight</div>
+                            <div class="font-semibold" id="display-weight">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Height</div>
+                            <div class="font-semibold" id="display-height">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">BMI</div>
+                            <div class="font-semibold" id="display-bmi">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Body Fat %</div>
+                            <div class="font-semibold" id="display-bodyFat">-</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-secondary mb-1">Muscle Mass %</div>
+                            <div class="font-semibold" id="display-muscleMass">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>Change Password</h2>
+                </div>
+
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label form-label-required">Current Password</label>
+                        <input type="password" id="currentPassword" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label form-label-required">New Password</label>
+                        <input type="password" id="newPassword" class="form-input" required>
+                        <span class="form-help">Min 8 characters with uppercase, lowercase, and number</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label form-label-required">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2>Danger Zone</h2>
+                </div>
+
+                <div class="danger-zone">
+                    <h3 style="color: var(--color-danger-700); margin-bottom: var(--space-3);">Delete Account</h3>
+                    <p style="margin-bottom: var(--space-4); color: var(--color-text-secondary);">
+                        Once you delete your account, there is no going back. Please be certain.
+                    </p>
+
+                    <div class="alert alert-warning mb-4">
+                        <strong>⚠️ Warning:</strong> Deleting your account will:
+                        <ul style="margin: var(--space-2) 0 0 var(--space-6); list-style: disc;">
+                            <li>Remove you from all competitions</li>
+                            <li>Transfer creator role if you created competitions</li>
+                            <li>Anonymize your historical data</li>
+                            <li>This action cannot be undone</li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-danger" id="delete-account-btn">Delete My Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../../js/state.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/ui.js"></script>
+
+    <script>
+        // Check authentication
+        if (!Auth.isAuthenticated()) {
+            window.location.href = '../auth/login.html';
+        }
+
+        let currentUser = Auth.getCurrentUser();
+
+        // Mobile menu toggle
+        document.getElementById('navbar-toggle').addEventListener('click', () => {
+            document.getElementById('navbar-menu').classList.toggle('active');
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '../auth/login.html';
+        });
+
+        // Load profile data
+        function loadProfileData() {
+            currentUser = Auth.getCurrentUser();
+
+            // Header
+            const headerAvatar = document.getElementById('header-avatar');
+            if (currentUser.profileImage) {
+                headerAvatar.innerHTML = `<img src="${currentUser.profileImage}" alt="${currentUser.displayName}">`;
+            } else {
+                headerAvatar.textContent = Utils.getInitials(currentUser.displayName || currentUser.realName);
+                headerAvatar.style.backgroundColor = Utils.getRandomColor();
+            }
+
+            document.getElementById('header-name').textContent = currentUser.displayName || currentUser.realName;
+            document.getElementById('header-email').textContent = currentUser.email;
+
+            // Stats
+            document.getElementById('stat-weight').textContent = currentUser.weight ? `${currentUser.weight} kg` : '-';
+            document.getElementById('stat-height').textContent = currentUser.height ? `${currentUser.height} cm` : '-';
+            document.getElementById('stat-bmi').textContent = currentUser.bmi || '-';
+
+            // Personal info display
+            document.getElementById('display-realName').textContent = currentUser.realName || '-';
+            document.getElementById('display-displayName').textContent = currentUser.displayName || '-';
+            document.getElementById('display-email').textContent = currentUser.email;
+            document.getElementById('display-memberSince').textContent = Utils.formatDate(currentUser.createdAt, 'short');
+
+            // Measurements display
+            document.getElementById('display-weight').textContent = currentUser.weight ? `${currentUser.weight} kg` : 'Not set';
+            document.getElementById('display-height').textContent = currentUser.height ? `${currentUser.height} cm` : 'Not set';
+            document.getElementById('display-bmi').textContent = currentUser.bmi || 'Not calculated';
+            document.getElementById('display-bodyFat').textContent = currentUser.bodyFatPercentage ? `${currentUser.bodyFatPercentage}%` : 'Not set';
+            document.getElementById('display-muscleMass').textContent = currentUser.muscleMassPercentage ? `${currentUser.muscleMassPercentage}%` : 'Not set';
+        }
+
+        // Edit personal info
+        document.getElementById('edit-personal-btn').addEventListener('click', () => {
+            document.getElementById('personal-info-display').style.display = 'none';
+            document.getElementById('personal-info-form').style.display = 'block';
+
+            document.getElementById('realName').value = currentUser.realName || '';
+            document.getElementById('displayName').value = currentUser.displayName || '';
+        });
+
+        document.getElementById('cancel-personal-btn').addEventListener('click', () => {
+            document.getElementById('personal-info-form').style.display = 'none';
+            document.getElementById('personal-info-display').style.display = 'block';
+        });
+
+        document.getElementById('personal-info-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const result = Auth.updateProfile(currentUser.id, {
+                realName: document.getElementById('realName').value,
+                displayName: document.getElementById('displayName').value
+            });
+
+            if (result.success) {
+                UI.showNotification({
+                    title: 'Success',
+                    message: 'Personal information updated',
+                    type: 'success'
+                });
+                document.getElementById('personal-info-form').style.display = 'none';
+                document.getElementById('personal-info-display').style.display = 'block';
+                loadProfileData();
+            } else {
+                UI.alert('Error', result.error, 'danger');
+            }
+        });
+
+        // Edit measurements
+        document.getElementById('edit-measurements-btn').addEventListener('click', () => {
+            document.getElementById('measurements-display').style.display = 'none';
+            document.getElementById('measurements-form').style.display = 'block';
+
+            document.getElementById('weight').value = currentUser.weight || '';
+            document.getElementById('height').value = currentUser.height || '';
+            document.getElementById('bodyFatPercentage').value = currentUser.bodyFatPercentage || '';
+            document.getElementById('muscleMassPercentage').value = currentUser.muscleMassPercentage || '';
+        });
+
+        document.getElementById('cancel-measurements-btn').addEventListener('click', () => {
+            document.getElementById('measurements-form').style.display = 'none';
+            document.getElementById('measurements-display').style.display = 'block';
+        });
+
+        document.getElementById('measurements-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const result = Auth.updateProfile(currentUser.id, {
+                weight: parseFloat(document.getElementById('weight').value) || null,
+                height: parseFloat(document.getElementById('height').value) || null,
+                bodyFatPercentage: parseFloat(document.getElementById('bodyFatPercentage').value) || null,
+                muscleMassPercentage: parseFloat(document.getElementById('muscleMassPercentage').value) || null
+            });
+
+            if (result.success) {
+                UI.showNotification({
+                    title: 'Success',
+                    message: 'Measurements updated',
+                    type: 'success'
+                });
+                document.getElementById('measurements-form').style.display = 'none';
+                document.getElementById('measurements-display').style.display = 'block';
+                loadProfileData();
+            } else {
+                UI.alert('Error', result.error, 'danger');
+            }
+        });
+
+        // Change password
+        document.getElementById('password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                UI.alert('Error', 'New passwords do not match', 'danger');
+                return;
+            }
+
+            const result = Auth.changePassword(currentUser.id, currentPassword, newPassword);
+
+            if (result.success) {
+                UI.showNotification({
+                    title: 'Success',
+                    message: 'Password changed successfully',
+                    type: 'success'
+                });
+                document.getElementById('password-form').reset();
+            } else {
+                UI.alert('Error', result.error, 'danger');
+            }
+        });
+
+        // Delete account
+        document.getElementById('delete-account-btn').addEventListener('click', async () => {
+            const confirmed = await UI.confirm({
+                title: '⚠️ Delete Account',
+                content: `
+          <p style="margin-bottom: var(--space-4);">
+            <strong>This action cannot be undone.</strong>
+          </p>
+          <p style="margin-bottom: var(--space-4);">
+            Your account and all associated data will be permanently deleted. You will be removed from all competitions, and if you created any competitions, the creator role will be transferred to another participant.
+          </p>
+          <p style="color: var(--color-danger-600); font-weight: var(--font-weight-semibold);">
+            Are you absolutely sure you want to delete your account?
+          </p>
+        `,
+                confirmText: 'Yes, Delete My Account',
+                type: 'danger'
+            });
+
+            if (confirmed) {
+                const result = Auth.deleteAccount(currentUser.id);
+
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Account Deleted',
+                        message: 'Your account has been deleted. Redirecting...',
+                        type: 'info',
+                        duration: 2000
+                    });
+
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 2000);
+                } else {
+                    UI.alert('Error', result.error, 'danger');
+                }
+            }
+        });
+
+        // Initial load
+        loadProfileData();
+    </script>
+</body>
+
+</html>
