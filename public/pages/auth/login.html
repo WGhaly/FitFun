@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - FitFun</title>
   <meta name="description" content="Login to FitFun - Join weight loss competitions and track your progress">
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- Styles -->
   <link rel="stylesheet" href="../../styles/design-system.css">
   <link rel="stylesheet" href="../../styles/layout.css">
   <link rel="stylesheet" href="../../styles/components.css">
-  
+
   <style>
     .auth-container {
       min-height: 100vh;
@@ -109,6 +112,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
     <div class="auth-card">
@@ -120,28 +124,14 @@
       <form id="login-form">
         <div class="form-group">
           <label for="email" class="form-label form-label-required">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            class="form-input" 
-            placeholder="your@email.com"
-            required
-            autocomplete="email"
-          >
+          <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required
+            autocomplete="email">
         </div>
 
         <div class="form-group">
           <label for="password" class="form-label form-label-required">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            class="form-input" 
-            placeholder="Enter your password"
-            required
-            autocomplete="current-password"
-          >
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password"
+            required autocomplete="current-password">
         </div>
 
         <div id="error-message" class="alert alert-danger" style="display: none;"></div>
@@ -159,7 +149,8 @@
         <span>Demo Credentials</span>
       </div>
 
-      <div style="background: var(--color-neutral-50); padding: var(--space-4); border-radius: var(--radius-lg); font-size: var(--font-size-sm);">
+      <div
+        style="background: var(--color-neutral-50); padding: var(--space-4); border-radius: var(--radius-lg); font-size: var(--font-size-sm);">
         <p style="margin-bottom: var(--space-2);"><strong>User:</strong> john@example.com / Password123!</p>
         <p style="margin: 0;"><strong>Admin:</strong> admin@fitfun.com / Admin123!</p>
       </div>
@@ -167,6 +158,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="../../js/api.js"></script>
   <script src="../../js/state.js"></script>
   <script src="../../js/utils.js"></script>
   <script src="../../js/auth.js"></script>
@@ -186,31 +178,30 @@
     // Handle login form submission
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const errorDiv = document.getElementById('error-message');
       const loginBtn = document.getElementById('login-btn');
-      
+
       // Hide previous errors
       errorDiv.style.display = 'none';
-      
+
       // Disable button
       loginBtn.disabled = true;
       loginBtn.innerHTML = '<span class="spinner spinner-sm"></span> Logging in...';
-      
-      // Simulate async operation
-      setTimeout(() => {
-        const result = Auth.login(email, password);
-        
+
+      try {
+        const result = await Auth.login(email, password);
+
         if (result.success) {
           UI.showNotification({
-            title: 'Success',
+            title: 'Welcome!',
             message: 'Login successful! Redirecting...',
             type: 'success',
             duration: 2000
           });
-          
+
           // Redirect based on role
           setTimeout(() => {
             if (Auth.isAdmin()) {
@@ -220,13 +211,19 @@
             }
           }, 1000);
         } else {
-          errorDiv.textContent = result.error;
+          errorDiv.textContent = result.error || 'Invalid credentials';
           errorDiv.style.display = 'block';
           loginBtn.disabled = false;
-          loginBtn.textContent = 'Login';
+          loginBtn.innerHTML = 'Login';
         }
-      }, 500);
+      } catch (error) {
+        errorDiv.textContent = 'A system error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login';
+      }
     });
   </script>
 </body>
+
 </html>

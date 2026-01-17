@@ -453,9 +453,11 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/testimonials.js"></script>
     <script src="../../js/ui.js"></script>
 
     <script>
@@ -486,143 +488,148 @@
         let currentFilter = 'all';
 
         // Load testimonials
-        function loadTestimonials() {
-            const state = State.getState();
-            let testimonials = state.testimonials || [];
-            const users = state.users || [];
-            const competitions = state.competitions || [];
-
-            // Update counts
-            document.getElementById('count-all').textContent = testimonials.length;
-            document.getElementById('count-pending').textContent = testimonials.filter(t => t.status === 'pending').length;
-            document.getElementById('count-approved').textContent = testimonials.filter(t => t.status === 'approved').length;
-            document.getElementById('count-hidden').textContent = testimonials.filter(t => t.status === 'hidden').length;
-
-            // Filter testimonials
-            if (currentFilter !== 'all') {
-                testimonials = testimonials.filter(t => t.status === currentFilter);
-            }
-
-            // Sort by date (newest first)
-            testimonials.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
+        async function loadTestimonials() {
             const grid = document.getElementById('testimonials-grid');
+            grid.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Loading testimonials from server...</p></div>';
 
-            if (testimonials.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">💬</div>
-                        <h3>No Testimonials</h3>
-                        <p>No testimonials found for this filter.</p>
-                    </div>
-                `;
-                return;
-            }
+            try {
+                // Fetch testimonials, users, and competitions for display names
+                const [testimonials, usersResult, compsResult] = await Promise.all([
+                    Testimonials.getAll(),
+                    API.request('/admin/users'),
+                    API.competitions.getAll()
+                ]);
 
-            grid.innerHTML = testimonials.map(testimonial => {
-                const user = users.find(u => u.id === testimonial.userId);
-                const competition = competitions.find(c => c.id === testimonial.competitionId);
+                const users = usersResult.success ? usersResult.users : [];
+                const competitions = compsResult.success ? compsResult.competitions : [];
 
-                const userInitial = user?.displayName?.charAt(0).toUpperCase() || '?';
-                const userName = user?.displayName || 'Unknown User';
-                const competitionName = competition?.name || 'Unknown Competition';
+                // Update counts
+                document.getElementById('count-all').textContent = testimonials.length;
+                document.getElementById('count-pending').textContent = testimonials.filter(t => t.status === 'pending').length;
+                document.getElementById('count-approved').textContent = testimonials.filter(t => t.status === 'approved').length;
+                document.getElementById('count-hidden').textContent = testimonials.filter(t => t.status === 'hidden').length;
 
-                return `
-                    <div class="testimonial-card">
-                        <div class="testimonial-header">
-                            <div class="testimonial-user">
-                                <div class="testimonial-avatar">${userInitial}</div>
-                                <div class="testimonial-user-info">
-                                    <div class="testimonial-user-name">${userName}</div>
-                                    <div class="testimonial-competition">🏆 ${competitionName}</div>
-                                </div>
-                                <span class="testimonial-status ${testimonial.status}">${testimonial.status.toUpperCase()}</span>
-                            </div>
+                let displayTestimonials = [...testimonials];
+
+                // Filter testimonials
+                if (currentFilter !== 'all') {
+                    displayTestimonials = displayTestimonials.filter(t => t.status === currentFilter);
+                }
+
+                // Sort by date (newest first)
+                displayTestimonials.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                if (displayTestimonials.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <h3>No Testimonials</h3>
+                            <p>No testimonials found for this filter.</p>
                         </div>
-                        <div class="testimonial-content">
-                            <div class="testimonial-text">${testimonial.text}</div>
-                            <div class="testimonial-meta">
-                                <div class="testimonial-meta-item">
-                                    📅 ${Utils.formatDate(testimonial.createdAt)}
-                                </div>
-                                ${testimonial.weightLost ? `
-                                    <div class="testimonial-meta-item">
-                                        ⚖️ Lost ${testimonial.weightLost} kg
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = displayTestimonials.map(testimonial => {
+                    const user = users.find(u => u.id === testimonial.userId);
+                    const competition = competitions.find(c => c.id === testimonial.competitionId);
+
+                    const userInitial = user?.displayName?.charAt(0).toUpperCase() || (testimonial.display_name?.charAt(0)) || '?';
+                    const userName = user?.displayName || testimonial.display_name || 'Unknown User';
+                    const competitionName = competition?.name || testimonial.competition_name || 'Unknown Competition';
+                    const formattedDate = typeof Utils !== 'undefined' ? Utils.formatDate(testimonial.createdAt) : new Date(testimonial.createdAt).toLocaleDateString();
+
+                    return `
+                        <div class="testimonial-card">
+                            <div class="testimonial-header">
+                                <div class="testimonial-user">
+                                    <div class="testimonial-avatar">${userInitial}</div>
+                                    <div class="testimonial-user-info">
+                                        <div class="testimonial-user-name">${userName}</div>
+                                        <div class="testimonial-competition">🏆 ${competitionName}</div>
                                     </div>
-                                ` : ''}
+                                    <span class="testimonial-status ${testimonial.status}">${testimonial.status.toUpperCase()}</span>
+                                </div>
+                            </div>
+                            <div class="testimonial-content">
+                                <div class="testimonial-text">${testimonial.text}</div>
+                                <div class="testimonial-meta">
+                                    <div class="testimonial-meta-item">
+                                        📅 ${formattedDate}
+                                    </div>
+                                    ${testimonial.weightLost ? `
+                                        <div class="testimonial-meta-item">
+                                            ⚖️ Lost ${testimonial.weightLost} kg
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="testimonial-actions">
+                                ${testimonial.status === 'pending' ? `
+                                    <button class="btn-action btn-approve" onclick="approveTestimonial('${testimonial.id}')">
+                                        ✓ Approve
+                                    </button>
+                                    <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
+                                        ✕ Hide
+                                    </button>
+                                ` : testimonial.status === 'approved' ? `
+                                    <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
+                                        ✕ Hide
+                                    </button>
+                                ` : `
+                                    <button class="btn-action btn-unhide" onclick="approveTestimonial('${testimonial.id}')">
+                                        ✓ Unhide
+                                    </button>
+                                `}
+                                <button class="btn-action btn-delete" onclick="deleteTestimonial('${testimonial.id}')">
+                                    🗑️ Delete
+                                </button>
                             </div>
                         </div>
-                        <div class="testimonial-actions">
-                            ${testimonial.status === 'pending' ? `
-                                <button class="btn-action btn-approve" onclick="approveTestimonial('${testimonial.id}')">
-                                    ✓ Approve
-                                </button>
-                                <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
-                                    ✕ Hide
-                                </button>
-                            ` : testimonial.status === 'approved' ? `
-                                <button class="btn-action btn-hide" onclick="hideTestimonial('${testimonial.id}')">
-                                    ✕ Hide
-                                </button>
-                            ` : `
-                                <button class="btn-action btn-unhide" onclick="approveTestimonial('${testimonial.id}')">
-                                    ↻ Unhide
-                                </button>
-                            `}
-                            <button class="btn-action btn-delete" onclick="deleteTestimonial('${testimonial.id}')">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading testimonials page data:', error);
+                grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error: ${error.message}</p></div>`;
+            }
         }
 
         // Approve testimonial
-        function approveTestimonial(testimonialId) {
-            const state = State.getState();
-            const testimonials = state.testimonials || [];
-            const testimonial = testimonials.find(t => t.id === testimonialId);
-
-            if (testimonial) {
-                testimonial.status = 'approved';
-                testimonial.approvedAt = new Date().toISOString();
-                testimonial.approvedBy = currentUser.id;
-                State.setState('testimonials', testimonials);
+        async function approveTestimonial(testimonialId) {
+            const result = await Testimonials.updateStatus(testimonialId, 'approved');
+            if (result.success) {
                 loadTestimonials();
+            } else {
+                alert('Failed to approve: ' + result.error);
             }
         }
 
         // Hide testimonial
-        function hideTestimonial(testimonialId) {
+        async function hideTestimonial(testimonialId) {
             if (!confirm('Are you sure you want to hide this testimonial?')) {
                 return;
             }
 
-            const state = State.getState();
-            const testimonials = state.testimonials || [];
-            const testimonial = testimonials.find(t => t.id === testimonialId);
-
-            if (testimonial) {
-                testimonial.status = 'hidden';
-                testimonial.hiddenAt = new Date().toISOString();
-                testimonial.hiddenBy = currentUser.id;
-                State.setState('testimonials', testimonials);
+            const result = await Testimonials.updateStatus(testimonialId, 'hidden');
+            if (result.success) {
                 loadTestimonials();
+            } else {
+                alert('Failed to hide: ' + result.error);
             }
         }
 
         // Delete testimonial
-        function deleteTestimonial(testimonialId) {
+        async function deleteTestimonial(testimonialId) {
             if (!confirm('Are you sure you want to permanently delete this testimonial? This action cannot be undone.')) {
                 return;
             }
 
-            const state = State.getState();
-            const testimonials = state.testimonials || [];
-            const updatedTestimonials = testimonials.filter(t => t.id !== testimonialId);
-            State.setState('testimonials', updatedTestimonials);
-            loadTestimonials();
+            const result = await Testimonials.delete(testimonialId);
+            if (result.success) {
+                loadTestimonials();
+            } else {
+                alert('Failed to delete: ' + result.error);
+            }
         }
 
         // Filter tabs

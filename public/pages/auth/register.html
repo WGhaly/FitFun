@@ -205,6 +205,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -286,13 +287,12 @@
             registerBtn.disabled = true;
             registerBtn.innerHTML = '<span class="spinner spinner-sm"></span> Creating account...';
 
-            // Simulate async operation
-            setTimeout(() => {
-                const result = Auth.register(formData);
+            try {
+                const result = await Auth.register(formData);
 
                 if (result.success) {
                     UI.showNotification({
-                        title: 'Success',
+                        title: 'Welcome to FitFun!',
                         message: 'Account created successfully! Redirecting...',
                         type: 'success',
                         duration: 2000
@@ -303,12 +303,17 @@
                         window.location.href = '../user/home.html';
                     }, 1000);
                 } else {
-                    errorDiv.textContent = result.error;
+                    errorDiv.textContent = result.error || 'Registration failed';
                     errorDiv.style.display = 'block';
                     registerBtn.disabled = false;
-                    registerBtn.textContent = 'Create Account';
+                    registerBtn.innerHTML = 'Create Account';
                 }
-            }, 500);
+            } catch (error) {
+                errorDiv.textContent = 'A system error occurred. Please try again.';
+                errorDiv.style.display = 'block';
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = 'Create Account';
+            }
         });
     </script>
 </body>

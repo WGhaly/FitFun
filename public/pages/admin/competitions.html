@@ -377,6 +377,7 @@
         </div>
     </div>
 
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -402,12 +403,35 @@
         let allCompetitions = [];
         let filteredCompetitions = [];
 
-        function loadCompetitions() {
-            const state = State.getState();
-            allCompetitions = state.competitions || [];
-            filteredCompetitions = [...allCompetitions];
-            updateStats();
-            renderCompetitions();
+        async function loadCompetitions() {
+            try {
+                const grid = document.getElementById('competitions-grid');
+                grid.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Loading competitions from server...</p></div>';
+
+                const data = await API.competitions.getAll();
+                if (data.success) {
+                    allCompetitions = data.competitions || [];
+                    filteredCompetitions = [...allCompetitions];
+                    updateStats();
+                    renderCompetitions();
+                } else {
+                    throw new Error(data.error || 'Failed to fetch competitions');
+                }
+            } catch (error) {
+                console.error('Failed to load competitions:', error);
+
+                // Fallback to local state if API fails (useful for local testing/offline)
+                const state = State.getState();
+                allCompetitions = state.competitions || [];
+                filteredCompetitions = [...allCompetitions];
+                updateStats();
+                renderCompetitions();
+
+                if (allCompetitions.length === 0) {
+                    const grid = document.getElementById('competitions-grid');
+                    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error: ${error.message}</p></div>`;
+                }
+            }
         }
 
         function updateStats() {
@@ -432,8 +456,8 @@
 
             grid.innerHTML = filteredCompetitions.map(comp => {
                 const participantCount = (comp.participants || []).length;
-                const startDate = Utils.formatDate(comp.startDate);
-                const endDate = Utils.formatDate(comp.endDate);
+                const startDate = typeof Utils !== 'undefined' ? Utils.formatDate(comp.startDate) : new Date(comp.startDate).toLocaleDateString();
+                const endDate = typeof Utils !== 'undefined' ? Utils.formatDate(comp.endDate) : new Date(comp.endDate).toLocaleDateString();
 
                 return `
                     <div class="competition-card">
@@ -466,20 +490,33 @@
             window.location.href = `../../pages/user/competition-detail.html?id=${id}`;
         }
 
-        function cancelCompetition(id) {
+        async function cancelCompetition(id) {
             if (!confirm('Are you sure you want to cancel this competition? This action cannot be undone.')) {
                 return;
             }
 
-            const state = State.getState();
-            const competitions = state.competitions || [];
-            const compIndex = competitions.findIndex(c => c.id === id);
+            try {
+                const result = await API.competitions.update(id, { status: 'canceled' });
+                if (result.success) {
+                    alert('Competition canceled successfully');
+                    loadCompetitions();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Cancel failed:', error);
 
-            if (compIndex !== -1) {
-                competitions[compIndex].status = 'canceled';
-                State.setState({ competitions });
-                alert('Competition canceled successfully');
-                loadCompetitions();
+                // Fallback to local state if server fails
+                const state = State.getState();
+                const competitions = state.competitions || [];
+                const compIndex = competitions.findIndex(c => c.id === id);
+
+                if (compIndex !== -1) {
+                    competitions[compIndex].status = 'canceled';
+                    State.setState('competitions', competitions);
+                    alert('Competition canceled locally (Server connection failed)');
+                    loadCompetitions();
+                }
             }
         }
 

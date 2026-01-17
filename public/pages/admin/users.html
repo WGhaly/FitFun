@@ -512,6 +512,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -542,15 +543,39 @@
         let allUsers = [];
         let filteredUsers = [];
 
-        function loadUsers() {
-            const state = State.getState();
-            allUsers = (state.users || []).filter(u => u.role === 'user');
-            filteredUsers = [...allUsers];
-            renderUsers();
+        async function loadUsers() {
+            try {
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div><p>Loading users from server...</p></div></td></tr>';
+
+                const result = await API.request('/admin/users');
+                if (result.success) {
+                    allUsers = (result.users || []).filter(u => u.role === 'user');
+                    filteredUsers = [...allUsers];
+                    renderUsers();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Failed to load users:', error);
+
+                // Fallback to local state
+                const state = State.getState();
+                allUsers = (state.users || []).filter(u => u.role === 'user');
+                filteredUsers = [...allUsers];
+                renderUsers();
+            }
         }
 
-        function renderUsers() {
+        async function renderUsers() {
             const tbody = document.getElementById('users-table-body');
+
+            // Get competitions if not already loaded (to show counts)
+            let allComps = [];
+            try {
+                const compResult = await API.competitions.getAll();
+                if (compResult.success) allComps = compResult.competitions;
+            } catch (e) { }
 
             if (filteredUsers.length === 0) {
                 tbody.innerHTML = `
@@ -568,8 +593,13 @@
 
             tbody.innerHTML = filteredUsers.map(user => {
                 const initials = (user.displayName || user.email).substring(0, 2).toUpperCase();
-                const joinedDate = Utils.formatDate(user.createdAt);
-                const userCompetitions = getUserCompetitions(user.id);
+                const joinedDate = typeof Utils !== 'undefined' ? Utils.formatDate(user.createdAt) : new Date(user.createdAt).toLocaleDateString();
+
+                // Count competitions for this user
+                const userCompCount = allComps.filter(c =>
+                    c.creatorId === user.id || (c.participants || []).some(p => p.userId === user.id)
+                ).length;
+
                 const status = user.isActive !== false ? 'active' : 'inactive';
 
                 return `
@@ -587,12 +617,12 @@
                         </td>
                         <td>${user.email}</td>
                         <td>${joinedDate}</td>
-                        <td>${userCompetitions.length}</td>
+                        <td>${userCompCount}</td>
                         <td><span class="status-badge ${status}">${status}</span></td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn-action btn-view" onclick="viewUser('${user.id}')">View</button>
-                                <button class="btn-action btn-remove" onclick="removeUserFromCompetition('${user.id}')">Remove</button>
+                                <button class="btn-action btn-remove" onclick="deleteUser('${user.id}')">Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -668,23 +698,23 @@
             modal.classList.add('show');
         }
 
-        function removeUserFromCompetition(userId) {
-            if (!confirm('Are you sure you want to remove this user from all competitions?')) {
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone and will remove them from all competitions.')) {
                 return;
             }
 
-            const state = State.getState();
-            const competitions = state.competitions || [];
-
-            competitions.forEach(comp => {
-                if (comp.participants) {
-                    comp.participants = comp.participants.filter(p => p.userId !== userId);
+            try {
+                const result = await API.request(`/admin/users/${userId}`, { method: 'DELETE' });
+                if (result.success) {
+                    alert('User deleted successfully');
+                    loadUsers();
+                } else {
+                    alert('Error: ' + result.error);
                 }
-            });
-
-            State.setState({ competitions });
-            alert('User removed from all competitions');
-            loadUsers();
+            } catch (error) {
+                console.error('Delete failed:', error);
+                alert('Deletion failed. See console for details.');
+            }
         }
 
         // Search and filter

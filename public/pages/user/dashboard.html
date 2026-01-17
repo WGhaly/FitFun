@@ -311,6 +311,7 @@
     </main>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -507,50 +508,98 @@
             document.getElementById('join-requests-section').style.display = totalRequests > 0 ? 'block' : 'none';
         }
 
-        // Approve join request
-        window.approveRequest = function (competitionId, userId) {
-            const result = Competition.approveJoinRequest(competitionId, userId, currentUser.id);
-            if (result.success) {
-                UI.showNotification({
-                    title: 'Approved',
-                    message: 'Join request approved',
-                    type: 'success'
-                });
-                loadJoinRequests();
+        // Initial load
+        async function init() {
+            try {
+                // Show loading state
+                UI.showLoading(document.querySelector('main'));
+
+                await State.syncWithBackend();
+
+                loadStats();
                 loadCompetitions();
-            } else {
-                UI.alert('Error', result.error, 'danger');
+                loadJoinRequests();
+
+                UI.hideLoading();
+
+                // Periodic update
+                setInterval(async () => {
+                    await State.syncWithBackend();
+                    loadStats();
+                    loadCompetitions();
+                    loadJoinRequests();
+                }, 60000);
+            } catch (error) {
+                console.error('Initialization error:', error);
+                UI.hideLoading();
+            }
+        }
+
+        init();
+
+        // Approve join request
+        window.approveRequest = async function (competitionId, userId) {
+            const btn = event.target;
+            btn.disabled = true;
+
+            try {
+                // Assuming we add approveJoinRequest to API client
+                const response = await fetch(`/api/competitions/requests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ competitionId, userId, action: 'approve' })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Approved',
+                        message: 'Join request approved',
+                        type: 'success'
+                    });
+                    await stateManager.syncWithBackend();
+                    loadJoinRequests();
+                    loadCompetitions();
+                } else {
+                    UI.alert('Error', result.error, 'danger');
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                UI.alert('Error', 'A system error occurred', 'danger');
+                btn.disabled = false;
             }
         };
 
         // Reject join request
-        window.rejectRequest = function (competitionId, userId) {
-            const result = Competition.rejectJoinRequest(competitionId, userId, currentUser.id);
-            if (result.success) {
-                UI.showNotification({
-                    title: 'Rejected',
-                    message: 'Join request rejected',
-                    type: 'info'
+        window.rejectRequest = async function (competitionId, userId) {
+            const btn = event.target;
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/competitions/requests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ competitionId, userId, action: 'reject' })
                 });
-                loadJoinRequests();
-            } else {
-                UI.alert('Error', result.error, 'danger');
+                const result = await response.json();
+
+                if (result.success) {
+                    UI.showNotification({
+                        title: 'Rejected',
+                        message: 'Join request rejected',
+                        type: 'info'
+                    });
+                    await stateManager.syncWithBackend();
+                    loadJoinRequests();
+                } else {
+                    UI.alert('Error', result.error, 'danger');
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                UI.alert('Error', 'A system error occurred', 'danger');
+                btn.disabled = false;
             }
         };
-
-        // Update competition statuses periodically
-        Competition.updateStatuses();
-        setInterval(() => {
-            Competition.updateStatuses();
-            loadStats();
-            loadCompetitions();
-            loadJoinRequests();
-        }, 60000); // Every minute
-
-        // Initial load
-        loadStats();
-        loadCompetitions();
-        loadJoinRequests();
     </script>
 </body>
 

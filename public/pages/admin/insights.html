@@ -497,6 +497,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -527,32 +528,34 @@
         });
 
         // Load insights
-        function loadInsights() {
-            const state = State.getState();
-            const users = state.users || [];
-            const competitions = state.competitions || [];
-            const testimonials = state.testimonials || [];
-            const measurements = state.measurements || [];
-
-            // Basic stats
-            document.getElementById('total-users').textContent = users.length;
-            document.getElementById('total-competitions').textContent = competitions.length;
-            document.getElementById('total-testimonials').textContent = testimonials.length;
-
-            // Calculate total weight lost
-            const totalWeightLost = measurements.reduce((sum, m) => {
-                if (m.weightLost) {
-                    return sum + m.weightLost;
+        async function loadInsights() {
+            try {
+                const result = await API.request('/admin/insights');
+                if (result.success) {
+                    const insights = result.insights;
+                    renderInsights(insights);
+                } else {
+                    throw new Error(result.error);
                 }
-                return sum;
-            }, 0);
-            document.getElementById('total-weight-lost').textContent = `${totalWeightLost.toFixed(1)} kg`;
+            } catch (error) {
+                console.error('Failed to load insights:', error);
+                // Fallback to local state if necessary or show error
+                document.querySelector('.page-container').innerHTML += `<div class="empty-state"><p>Error loading insights: ${error.message}</p></div>`;
+            }
+        }
+
+        function renderInsights(insights) {
+            // Basic stats
+            document.getElementById('total-users').textContent = insights.totalUsers;
+            document.getElementById('total-competitions').textContent = insights.totalCompetitions;
+            document.getElementById('total-testimonials').textContent = insights.totalTestimonials;
+            document.getElementById('total-weight-lost').textContent = `${insights.totalWeightLoss.toFixed(1)} kg`;
 
             // Geographic distribution
-            loadGeographicData(users);
+            loadGeographicData(insights.users || []);
 
             // Competition statistics
-            loadCompetitionStats(competitions);
+            loadCompetitionStats(insights.competitions || []);
         }
 
         function loadGeographicData(users) {
@@ -641,14 +644,16 @@
             competitions.forEach(c => {
                 methodCount[c.measurementMethod] = (methodCount[c.measurementMethod] || 0) + 1;
             });
-            const popularMethod = Object.entries(methodCount).sort((a, b) => b[1] - a[1])[0];
+            const sortedMethods = Object.entries(methodCount).sort((a, b) => b[1] - a[1]);
+            const popularMethod = sortedMethods.length > 0 ? sortedMethods[0][0] : 'N/A';
+
             const methodNames = {
                 'percentage': 'Percentage Weight Loss',
                 'absolute': 'Absolute Weight Loss',
                 'bmi': 'BMI-based',
                 'bodyfat': 'Body Fat %'
             };
-            document.getElementById('popular-method').textContent = methodNames[popularMethod[0]] || popularMethod[0];
+            document.getElementById('popular-method').textContent = methodNames[popularMethod] || popularMethod;
 
             // Average duration
             const avgDuration = competitions.reduce((sum, c) => sum + (c.duration || 0), 0) / competitions.length;

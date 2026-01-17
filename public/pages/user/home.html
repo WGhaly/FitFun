@@ -304,6 +304,7 @@
     </main>
 
     <!-- Scripts -->
+    <script src="../../js/api.js"></script>
     <script src="../../js/state.js"></script>
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
@@ -462,26 +463,40 @@
 
         // Join competition
         window.joinCompetition = async function (competitionId) {
-            const result = Competition.join(competitionId, currentUser.id);
+            const joinBtn = event.target;
+            const originalText = joinBtn.textContent;
 
-            if (result.success) {
-                if (result.requiresApproval) {
-                    UI.showNotification({
-                        title: 'Request Sent',
-                        message: 'Your join request has been sent to the competition creator',
-                        type: 'info'
-                    });
+            joinBtn.disabled = true;
+            joinBtn.innerHTML = '<span class="spinner spinner-sm"></span> Joining...';
+
+            try {
+                const result = await Competition.join(competitionId);
+
+                if (result.success) {
+                    if (result.requiresApproval) {
+                        UI.showNotification({
+                            title: 'Request Sent',
+                            message: 'Your join request has been sent to the competition creator',
+                            type: 'info'
+                        });
+                    } else {
+                        UI.showNotification({
+                            title: 'Success',
+                            message: 'You have joined the competition!',
+                            type: 'success'
+                        });
+                    }
+                    loadCompetitions();
+                    loadNotifications();
                 } else {
-                    UI.showNotification({
-                        title: 'Success',
-                        message: 'You have joined the competition!',
-                        type: 'success'
-                    });
+                    UI.alert('Cannot Join', result.error, 'danger');
+                    joinBtn.disabled = false;
+                    joinBtn.textContent = originalText;
                 }
-                loadCompetitions();
-                loadNotifications();
-            } else {
-                UI.alert('Cannot Join', result.error, 'danger');
+            } catch (error) {
+                UI.alert('Error', 'A system error occurred. Please try again.', 'danger');
+                joinBtn.disabled = false;
+                joinBtn.textContent = originalText;
             }
         };
 
@@ -508,7 +523,8 @@
                 const card = document.createElement('div');
                 card.className = 'testimonial-card animate-fade-in';
 
-                const user = stateManager.getState('users').find(u => u.id === test.userId);
+                const users = stateManager.getState('users');
+                const user = users.find(u => u.id === test.userId) || { displayName: 'User', id: test.userId };
 
                 card.innerHTML = `
           <div class="testimonial-content">
@@ -530,18 +546,28 @@
         // Sort competitions
         document.getElementById('sort-competitions').addEventListener('change', loadCompetitions);
 
-        // Update competition statuses periodically
-        Competition.updateStatuses();
-        setInterval(() => {
-            Competition.updateStatuses();
-            loadCompetitions();
-            loadNotifications();
-        }, 60000); // Every minute
-
         // Initial load
-        loadNotifications();
-        loadCompetitions();
-        loadTestimonials();
+        async function init() {
+            try {
+                // Show loading state if needed
+                await stateManager.syncWithBackend();
+
+                loadNotifications();
+                loadCompetitions();
+                loadTestimonials();
+
+                // Periodic update
+                setInterval(async () => {
+                    await stateManager.syncWithBackend();
+                    loadCompetitions();
+                    loadNotifications();
+                }, 60000);
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        }
+
+        init();
     </script>
 </body>
 
